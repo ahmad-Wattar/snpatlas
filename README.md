@@ -1,93 +1,219 @@
-# snpatlas
+# SNP Analysis Pipeline
 
+A comprehensive bioinformatics tool for processing, analyzing, visualizing, and reporting Single Nucleotide Polymorphism (SNP) data from genomic datasets.
 
+## Overview
 
-## Getting started
+This pipeline provides a complete analysis workflow for SNP data, including:
+- SNP effect classification and categorization
+- Allele frequency analysis
+- Amino acid substitution analysis
+- SNP density calculations
+- Multiple SNP analysis per codon
+- Comprehensive visualization and reporting
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## Features
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+### Core Analysis Functions
+- **SNP Effect Classification**: Categorizes SNPs into 10 disjoint categories
+- **Allele Frequency Analysis**: Calculates frequencies per accession and category
+- **Amino Acid Substitution Analysis**: Analyzes protein-changing mutations
+- **SNP Density Analysis**: Normalizes SNP counts by gene/transcript lengths
+- **Multiple SNP Analysis**: Identifies and analyzes codons with multiple SNPs
+- **Unique Position Analysis**: Counts distinct SNP positions per gene
 
-## Add your files
+### Visualization
+- **Bar plots**: Effect distributions, top genes, category comparisons
+- **Histograms**: SNP count distributions, position distributions
+- **Heatmaps**: Accession vs. effect matrices, category vs. isoform matrices
+- **Box plots**: SNP density distributions across categories
+- **Scatter plots**: Density comparisons and correlations
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/topics/git/add_files/#add-files-to-a-git-repository) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://gitlab.informatik.uni-halle.de/aneaf1/snpatlas.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://gitlab.informatik.uni-halle.de/aneaf1/snpatlas/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/user/project/merge_requests/auto_merge/)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+### Output Formats
+- **PNG plots**: High-resolution images for presentations
+- **PDF reports**: Comprehensive multi-page reports
+- **CSV files**: Structured data for further analysis
+- **Text reports**: Detailed statistical summaries
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### Prerequisites
+- Python 3.7+
+- Required packages:
+  ```bash
+  pip install pandas numpy matplotlib seaborn
+  ```
+
+### Setup
+1. Clone or download the repository
+2. Ensure your data files are in the correct format (see Data Format section)
+3. Run the analysis scripts
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+### Single Dataset Analysis
+```python
+from snp_analysis_pipeline import SNPAnalysisPipeline
 
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+# Initialize pipeline
+pipeline = SNPAnalysisPipeline(
+    dataset_name="Arabidopsis thaliana",
+    output_base_dir="results"
+)
 
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
+# Run complete analysis
+pipeline.run_complete_analysis(
+    data_path=".",
+    data_pattern="*.csv",
+    data_sep=";"
+)
+```
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+### Command Line Usage
+```bash
+# Single dataset analysis
+python run_single_analysis.py
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+# Dual dataset comparison
+python run_dual_analysis.py
+```
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+## Data Format
+
+The pipeline expects CSV files with the following columns:
+- `snp_id_c`: SNP identifier
+- `transcript_ids`: Transcript identifiers
+- `eff`: SNP effect annotation
+- `alt`: Alternative allele
+- `snp_id_e`: Extended SNP identifier
+- `transcript_id`: Single transcript identifier
+- `ref`: Reference allele
+- `genotypes`: List of accessions with this SNP
+- `gene_name`: Gene name
+- `gene_id`: Gene identifier
+- `feature_type`: Feature type annotation
+- `transcript_biotype`: Transcript biotype
+- `rank`: Rank information
+- `hgvs_c`: HGVS coding sequence notation
+- `snp_aa_label`: Amino acid change label
+- `errors`: Error information
+- `dp`: Depth information
+- `aa_pos`: Amino acid position
+- `aa_len`: Amino acid length
+- `cdna_pos`: cDNA position
+- `cdna_len`: cDNA length
+- `cds_pos`: Coding sequence position
+- `cds_len`: Coding sequence length
+- `distance`: Distance information
+- `annotation_impact`: Impact annotation
+- `snp_aa_seq`: Amino acid sequence
+
+## SNP Effect Categories
+
+The pipeline classifies SNPs into 10 disjoint categories:
+
+1. **Splice-related-coding-synonymous**: Splice region variants that are synonymous
+2. **Splice-related-coding-non-synonymous**: Splice region variants that change amino acids
+3. **Splice-related-non-coding**: Splice variants in non-coding regions
+4. **Missense**: Amino acid changing variants
+5. **Protein-changing-non-missense**: Other protein-changing variants (frameshift, stop, etc.)
+6. **Synonymous**: Silent mutations
+7. **UTR**: Untranslated region variants
+8. **Intron**: Intronic variants
+9. **Non-coding**: Non-coding transcript variants
+10. **Other**: All other variants
+
+## Output Structure
+
+```
+results/
+├── [dataset_name]/
+│   ├── plots/
+│   │   ├── effect_counts.png
+│   │   ├── effect_categories.png
+│   │   ├── snp_effects_all.png
+│   │   ├── multiple_snps_per_codon.png
+│   │   ├── top10_genes_unique_positions.png
+│   │   ├── unique_positions_histogram.png
+│   │   ├── complete_report.pdf
+│   │   └── [isoform_plots]/
+│   ├── csv/
+│   │   ├── effect_counts.csv
+│   │   ├── snp_counts_per_gene.csv
+│   │   ├── unique_positions_per_gene.csv
+│   │   ├── allele_per_accession.csv
+│   │   ├── category_allele_per_accession.csv
+│   │   └── [isoform_data]/
+│   └── reports/
+│       ├── complete_report.txt
+│       ├── multiple_snps_per_codon_report.txt
+│       └── [other_reports]/
+```
+
+## Key Analysis Functions
+
+### `classify_effect(effect: str) -> str`
+Classifies a single SNP effect into one of 10 disjoint categories using priority-based logic.
+
+### `analyze_multiple_snps_per_codon()`
+Identifies codons with multiple SNPs and analyzes their effect combinations.
+
+### `analyze_unique_positions_per_gene()`
+Counts the number of distinct SNP positions per gene.
+
+### `calculate_allele_frequencies_per_accession()`
+Calculates allele frequencies for each accession across all effect categories.
+
+### `analyze_aa_substitutions()`
+Analyzes amino acid substitutions and creates substitution matrices.
+
+## Configuration
+
+### Customizing Analysis Parameters
+```python
+# Modify top N genes to display
+pipeline.snp_counts_per_gene_analysis(top_n=20)
+
+# Customize heatmap accessions
+pipeline._plot_top_accessions_category_heatmap(top_n=50)
+```
+
+
+## Performance Notes
+
+- The pipeline is optimized for datasets with thousands to millions of SNPs
+- Memory usage scales with dataset size and number of accessions
+- Processing time depends on dataset complexity and number of isoforms
+- Large datasets may require several minutes to hours for complete analysis
+
+
+
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Citation
+
+If you use this pipeline in your research, please cite:
+
+```
+SNP Analysis Pipeline
+[Name/Institution]
+[Year]
+```
+
+## Contact
+
+For questions, issues, or contributions, please contact [www@www.com] or open an issue on the project repository.
+
+
+
+### Version 1.0.0
+- Initial release
+- Complete SNP analysis pipeline
+- 10 disjoint effect categories
+- Comprehensive visualization suite
+- PDF report generation
+- Multiple SNP analysis per codon
+- Unique position analysis per gene
