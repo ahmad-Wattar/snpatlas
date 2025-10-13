@@ -167,7 +167,6 @@ Calculates allele frequencies for each accession across all effect categories.
 ### `analyze_aa_substitutions()`
 Analyzes amino acid substitutions and creates substitution matrices.
 
-## Configuration
 
 ### Customizing Analysis Parameters
 ```python
@@ -177,7 +176,6 @@ pipeline.snp_counts_per_gene_analysis(top_n=20)
 # Customize heatmap accessions
 pipeline._plot_top_accessions_category_heatmap(top_n=50)
 ```
-
 
 ## Performance Notes
 
@@ -191,7 +189,7 @@ pipeline._plot_top_accessions_category_heatmap(top_n=50)
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License.
 
 ## Citation
 
