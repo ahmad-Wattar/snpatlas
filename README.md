@@ -1,3 +1,5 @@
+This tool is still under development and currently in the development phase.
+
 # SNP Analysis Pipeline
 
 A comprehensive bioinformatics tool for processing, analyzing, visualizing, and reporting Single Nucleotide Polymorphism (SNP) data from genomic datasets.
