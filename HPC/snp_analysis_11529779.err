@@ -1,0 +1,21 @@
+The following modules were not unloaded:
+  (Use "module --force purge" to unload all):
+
+  1) default-environment
+-------------------------------------------------------------------------------
+There are messages associated with the following module(s):
+-------------------------------------------------------------------------------
+
+anaconda3/5.2.0:
+   Anaconda is deprecated. Please use micromamba/conda instead. See
+   https://wiki.itz.uni-halle.de/display/DOK/Micromamba.
+
+-------------------------------------------------------------------------------
+
+Python 3.6.5 :: Anaconda, Inc.
+/scratch/user/aneaf/snpatlas/snp_analysis_pipeline.py:1469: SettingWithCopyWarning: 
+A value is trying to be set on a copy of a slice from a DataFrame.
+Try using .loc[row_indexer,col_indexer] = value instead
+
+See the caveats in the documentation: http://pandas.pydata.org/pandas-docs/stable/indexing.html#indexing-view-versus-copy
+  cat_data['isoform_num'] = cat_data['isoform'].str.replace('.', '').str.replace('all', '999').astype(int)

@@ -1,0 +1,60 @@
+==========================================
+SNP Analysis Pipeline - Large Node Version
+Job ID: 11529779
+Node: large039
+CPUs per node: 24
+Memory per node: 131072
+Start time: Mon Sep 15 11:26:14 CEST 2025
+==========================================
+Working directory: /scratch/user/aneaf/snpatlas
+Found dataset directory: dataset1
+total 10589664
+drwxr-xr-x  3 aneaf hd     32768 Sep  7 14:41 .
+drwxrwxr-x+ 6 aneaf hd     32768 Sep 15 11:26 ..
+-rw-r--r--  1 ahcba hd  88838512 Aug  4 15:33 combine_1_10.csv
+-rw-r--r--  1 ahcba hd  90378708 Aug  4 15:33 combine_1_11.csv
+-rw-r--r--  1 ahcba hd 136516583 Aug  4 15:33 combine_1_12.csv
+-rw-r--r--  1 ahcba hd 107064344 Aug  4 15:33 combine_1_13.csv
+-rw-r--r--  1 ahcba hd  42114699 Aug  4 15:33 combine_1_14.csv
+-rw-r--r--  1 ahcba hd   7831655 Aug  4 15:33 combine_1_15.csv
+-rw-r--r--  1 ahcba hd   8554829 Aug  4 15:33 combine_1_16.csv
+Python version and path:
+Python executable: /software/anaconda3/5.2.0/bin/python
+Checking required Python packages...
+✓ pandas available
+✓ numpy available
+✓ matplotlib available
+✓ seaborn available
+Starting SNP analysis...
+================================================================================
+Vereinfachte SNP-Analyse für HPC
+================================================================================
+Python version: 3.6.5 |Anaconda, Inc.| (default, Apr 29 2018, 16:14:56) 
+[GCC 7.2.0]
+Working directory: /scratch/user/aneaf/snpatlas
+
+Dataset: Arabidopsis_thaliana
+Data path: ./dataset1/
+Pattern: *.csv
+Found 121 CSV files
+First few files:
+  1: combine_5_6.csv
+  2: combine_1_26.csv
+  3: combine_3_14.csv
+  4: combine_2_11.csv
+  5: combine_1_25.csv
+
+Importing SNP analysis pipeline...
+
+Starting SNP analysis...
+
+============================================================
+Analyse erfolgreich abgeschlossen!
+Laufzeit: 9.29 Stunden (33450 Sekunden)
+Ergebnisse in: results/Arabidopsis_thaliana/
+============================================================
+==========================================
+Analysis completed at: Mon Sep 15 20:44:14 CEST 2025
+Results directory: /scratch/user/aneaf/snpatlas/results/
+Job finished successfully
+==========================================
