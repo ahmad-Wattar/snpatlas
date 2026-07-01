@@ -1,0 +1,541 @@
+SNP-Analyse Report für Arabidopsis_thaliana
+============================================================
+
+Starte komplette SNP-Analyse für Arabidopsis_thaliana
+============================================================
+
+Lade Daten...
+Lade Datei: ./dataset1/combine_5_6.csv
+Lade Datei: ./dataset1/combine_1_26.csv
+Lade Datei: ./dataset1/combine_3_14.csv
+Lade Datei: ./dataset1/combine_2_11.csv
+Lade Datei: ./dataset1/combine_1_25.csv
+Lade Datei: ./dataset1/combine_5_20.csv
+Lade Datei: ./dataset1/combine_4_9.csv
+Lade Datei: ./dataset1/combine_2_9.csv
+Lade Datei: ./dataset1/combine_4_6.csv
+Lade Datei: ./dataset1/combine_2_15.csv
+Lade Datei: ./dataset1/combine_4_13.csv
+Lade Datei: ./dataset1/combine_2_13.csv
+Lade Datei: ./dataset1/combine_5_13.csv
+Lade Datei: ./dataset1/combine_3_22.csv
+Lade Datei: ./dataset1/combine_5_14.csv
+Lade Datei: ./dataset1/combine_1_23.csv
+Lade Datei: ./dataset1/combine_1_17.csv
+Lade Datei: ./dataset1/combine_4_8.csv
+Lade Datei: ./dataset1/combine_1_11.csv
+Lade Datei: ./dataset1/combine_2_7.csv
+Lade Datei: ./dataset1/combine_1_30.csv
+Lade Datei: ./dataset1/combine_3_4.csv
+Lade Datei: ./dataset1/combine_3_18.csv
+Lade Datei: ./dataset1/combine_1_1.csv
+Lade Datei: ./dataset1/combine_1_5.csv
+Lade Datei: ./dataset1/combine_3_16.csv
+Lade Datei: ./dataset1/combine_2_20.csv
+Lade Datei: ./dataset1/combine_2_6.csv
+Lade Datei: ./dataset1/combine_3_11.csv
+Lade Datei: ./dataset1/combine_3_6.csv
+Lade Datei: ./dataset1/combine_1_10.csv
+Lade Datei: ./dataset1/combine_3_17.csv
+Lade Datei: ./dataset1/combine_4_19.csv
+Lade Datei: ./dataset1/combine_5_10.csv
+Lade Datei: ./dataset1/combine_4_3.csv
+Lade Datei: ./dataset1/combine_1_13.csv
+Lade Datei: ./dataset1/combine_2_12.csv
+Lade Datei: ./dataset1/combine_4_7.csv
+Lade Datei: ./dataset1/combine_1_15.csv
+Lade Datei: ./dataset1/combine_4_1.csv
+Lade Datei: ./dataset1/combine_3_5.csv
+Lade Datei: ./dataset1/combine_1_7.csv
+Lade Datei: ./dataset1/combine_2_17.csv
+Lade Datei: ./dataset1/combine_1_6.csv
+Lade Datei: ./dataset1/combine_5_17.csv
+Lade Datei: ./dataset1/combine_2_4.csv
+Lade Datei: ./dataset1/combine_1_18.csv
+Lade Datei: ./dataset1/combine_5_27.csv
+Lade Datei: ./dataset1/combine_3_2.csv
+Lade Datei: ./dataset1/combine_3_15.csv
+Lade Datei: ./dataset1/combine_1_28.csv
+Lade Datei: ./dataset1/combine_2_10.csv
+Lade Datei: ./dataset1/combine_5_4.csv
+Lade Datei: ./dataset1/combine_1_20.csv
+Lade Datei: ./dataset1/combine_1_31.csv
+Lade Datei: ./dataset1/combine_2_1.csv
+Lade Datei: ./dataset1/combine_5_18.csv
+Lade Datei: ./dataset1/combine_4_5.csv
+Lade Datei: ./dataset1/combine_2_8.csv
+Lade Datei: ./dataset1/combine_5_25.csv
+Lade Datei: ./dataset1/combine_3_12.csv
+Lade Datei: ./dataset1/combine_4_11.csv
+Lade Datei: ./dataset1/combine_5_24.csv
+Lade Datei: ./dataset1/combine_3_9.csv
+Lade Datei: ./dataset1/combine_3_3.csv
+Lade Datei: ./dataset1/combine_4_4.csv
+Lade Datei: ./dataset1/combine_5_5.csv
+Lade Datei: ./dataset1/combine_1_12.csv
+Lade Datei: ./dataset1/combine_1_29.csv
+Lade Datei: ./dataset1/combine_5_19.csv
+Lade Datei: ./dataset1/combine_3_7.csv
+Lade Datei: ./dataset1/combine_2_2.csv
+Lade Datei: ./dataset1/combine_4_17.csv
+Lade Datei: ./dataset1/combine_2_18.csv
+Lade Datei: ./dataset1/combine_3_1.csv
+Lade Datei: ./dataset1/combine_5_3.csv
+Lade Datei: ./dataset1/combine_1_8.csv
+Lade Datei: ./dataset1/combine_1_21.csv
+Lade Datei: ./dataset1/combine_5_1.csv
+Lade Datei: ./dataset1/combine_1_19.csv
+Lade Datei: ./dataset1/combine_5_12.csv
+Lade Datei: ./dataset1/combine_4_14.csv
+Lade Datei: ./dataset1/combine_5_7.csv
+Lade Datei: ./dataset1/combine_3_10.csv
+Lade Datei: ./dataset1/combine_5_21.csv
+Lade Datei: ./dataset1/combine_3_21.csv
+Lade Datei: ./dataset1/combine_1_16.csv
+Lade Datei: ./dataset1/combine_3_23.csv
+Lade Datei: ./dataset1/combine_2_5.csv
+Lade Datei: ./dataset1/combine_2_14.csv
+Lade Datei: ./dataset1/combine_1_4.csv
+Lade Datei: ./dataset1/combine_4_16.csv
+Lade Datei: ./dataset1/combine_5_11.csv
+Lade Datei: ./dataset1/combine_5_16.csv
+Lade Datei: ./dataset1/combine_4_18.csv
+Lade Datei: ./dataset1/combine_5_8.csv
+Lade Datei: ./dataset1/combine_5_15.csv
+Lade Datei: ./dataset1/combine_5_22.csv
+Lade Datei: ./dataset1/combine_1_14.csv
+Lade Datei: ./dataset1/combine_3_24.csv
+Lade Datei: ./dataset1/combine_5_9.csv
+Lade Datei: ./dataset1/combine_5_2.csv
+Lade Datei: ./dataset1/combine_4_2.csv
+Lade Datei: ./dataset1/combine_1_24.csv
+Lade Datei: ./dataset1/combine_3_8.csv
+Lade Datei: ./dataset1/combine_2_16.csv
+Lade Datei: ./dataset1/combine_3_13.csv
+Lade Datei: ./dataset1/combine_4_12.csv
+Lade Datei: ./dataset1/combine_1_22.csv
+Lade Datei: ./dataset1/combine_3_19.csv
+Lade Datei: ./dataset1/combine_5_23.csv
+Lade Datei: ./dataset1/combine_1_2.csv
+Lade Datei: ./dataset1/combine_5_26.csv
+Lade Datei: ./dataset1/combine_1_9.csv
+Lade Datei: ./dataset1/combine_4_10.csv
+Lade Datei: ./dataset1/combine_2_3.csv
+Lade Datei: ./dataset1/combine_1_3.csv
+Lade Datei: ./dataset1/combine_1_27.csv
+Lade Datei: ./dataset1/combine_2_19.csv
+Lade Datei: ./dataset1/combine_3_20.csv
+Lade Datei: ./dataset1/combine_4_15.csv
+Eingelesen: 10883913 Zeilen aus 121 Dateien
+
+Erstelle Grundstatistiken...
+Effekt-Zählungen erstellt:
+                                               Effect  Raw_Count
+0                                      intron_variant    4002391
+1                                    missense_variant    2063379
+2                                  synonymous_variant    1462508
+3                                 3_prime_UTR_variant    1364136
+4                                 5_prime_UTR_variant    1034416
+5                splice_region_variant&intron_variant     285728
+6                  non_coding_transcript_exon_variant     280692
+7      5_prime_UTR_premature_start_codon_gain_variant     116352
+8                                  frameshift_variant      71139
+9                                         stop_gained      42270
+10             missense_variant&splice_region_variant      34199
+11           splice_region_variant&synonymous_variant      25699
+12                              splice_region_variant      24921
+13                        disruptive_inframe_deletion      11133
+14             splice_acceptor_variant&intron_variant      10978
+15                splice_donor_variant&intron_variant       9595
+16                      conservative_inframe_deletion       5693
+17                       disruptive_inframe_insertion       5414
+18                     conservative_inframe_insertion       4875
+19                                         start_lost       3594
+20                                          stop_lost       3225
+21  splice_region_variant&non_coding_transcript_ex...       3093
+22                                 intragenic_variant       2994
+23                              stop_retained_variant       2976
+24                      frameshift_variant&start_lost       2029
+25                     frameshift_variant&stop_gained       1312
+26           frameshift_variant&splice_region_variant       1235
+27                      non_coding_transcript_variant       1184
+28                    stop_lost&splice_region_variant        958
+29                  stop_gained&splice_region_variant        958
+30                       frameshift_variant&stop_lost        695
+31                            initiator_codon_variant        665
+32  splice_acceptor_variant&splice_region_variant&...        578
+33        splice_region_variant&stop_retained_variant        505
+34                             start_retained_variant        355
+35  frameshift_variant&stop_lost&splice_region_var...        191
+36  frameshift_variant&splice_donor_variant&splice...        175
+37  frameshift_variant&splice_acceptor_variant&spl...        169
+38  disruptive_inframe_deletion&splice_region_variant        143
+39           start_lost&conservative_inframe_deletion        113
+40           stop_gained&disruptive_inframe_insertion        107
+41  splice_donor_variant&splice_region_variant&int...        105
+42            stop_gained&disruptive_inframe_deletion        105
+43  disruptive_inframe_insertion&splice_region_var...         86
+44  conservative_inframe_deletion&splice_region_va...         80
+45         stop_gained&conservative_inframe_insertion         71
+46  conservative_inframe_insertion&splice_region_v...         65
+47            stop_lost&conservative_inframe_deletion         58
+48            start_lost&disruptive_inframe_insertion         54
+49          start_lost&conservative_inframe_insertion         54
+50                   start_lost&splice_region_variant         52
+51  splice_acceptor_variant&5_prime_UTR_variant&in...         36
+52  frameshift_variant&start_lost&splice_region_va...         31
+53  splice_donor_variant&5_prime_UTR_variant&intro...         30
+54  splice_donor_variant&conservative_inframe_dele...         29
+55  splice_acceptor_variant&disruptive_inframe_del...         26
+56              stop_lost&disruptive_inframe_deletion         24
+57  splice_donor_variant&splice_region_variant&5_p...         22
+58  frameshift_variant&stop_gained&splice_region_v...         21
+59  splice_acceptor_variant&splice_region_variant&...         20
+60  splice_donor_variant&splice_region_variant&int...         19
+61  splice_acceptor_variant&conservative_inframe_d...         17
+62  stop_lost&conservative_inframe_deletion&splice...         14
+63  splice_donor_variant&splice_region_variant&3_p...         14
+64                          bidirectional_gene_fusion         13
+65             start_lost&disruptive_inframe_deletion         13
+66  splice_acceptor_variant&splice_region_variant&...         10
+67      initiator_codon_variant&splice_region_variant         10
+68  splice_acceptor_variant&3_prime_UTR_variant&in...         10
+69  splice_donor_variant&disruptive_inframe_deleti...          9
+70  splice_acceptor_variant&splice_region_variant&...          8
+71             stop_lost&disruptive_inframe_insertion          8
+72  stop_lost&disruptive_inframe_insertion&splice_...          5
+73  stop_lost&disruptive_inframe_deletion&splice_r...          4
+74  splice_donor_variant&3_prime_UTR_variant&intro...          3
+75  stop_gained&conservative_inframe_insertion&spl...          3
+76           5_prime_UTR_truncation&exon_loss_variant          2
+77  stop_gained&splice_donor_variant&disruptive_in...          2
+78  stop_gained&disruptive_inframe_insertion&splic...          2
+79  stop_lost&splice_acceptor_variant&conservative...          2
+80  frameshift_variant&stop_lost&splice_acceptor_v...          1
+81  splice_acceptor_variant&splice_donor_variant&s...          1
+82                                        gene_fusion          1
+83  start_lost&conservative_inframe_deletion&splic...          1
+
+Gespeichert: results/Arabidopsis_thaliana/csv/effect_counts.csv
+Plot als PNG gespeichert: results/Arabidopsis_thaliana/plots/effect_counts.png
+Analysiere Accessions...
+Anzahl eindeutiger Accessions: 1135
+Anzahl eindeutiger Accessions: 1135
+
+Anzahl eindeutiger Accessions Isoform .1: 1135
+Anzahl eindeutiger Accessions Isoform .2: 1135
+Anzahl eindeutiger Accessions Isoform .3: 1135
+Anzahl eindeutiger Accessions Isoform .4: 1135
+Anzahl eindeutiger Accessions Isoform .5: 1135
+Anzahl eindeutiger Accessions Isoform .6: 1135
+Anzahl eindeutiger Accessions Isoform .7: 1135
+Anzahl eindeutiger Accessions Isoform .8: 1135
+Anzahl eindeutiger Accessions Isoform .9: 1135
+Anzahl eindeutiger Accessions Isoform .10: 1135
+Anzahl eindeutiger Accessions Isoform .11: 1135
+Anzahl eindeutiger Accessions Isoform .12: 1135
+Anzahl eindeutiger Accessions Isoform .13: 1135
+Anzahl eindeutiger Accessions Isoform .14: 1134
+Anzahl eindeutiger Accessions Isoform .15: 1134
+Anzahl eindeutiger Accessions Isoform .16: 1134
+Anzahl eindeutiger Accessions Isoform .17: 1133
+Anzahl eindeutiger Accessions Isoform .18: 1133
+Anzahl eindeutiger Accessions Isoform .19: 1133
+Anzahl eindeutiger Accessions Isoform .20: 1127
+Anzahl eindeutiger Accessions Isoform .21: 1127
+Anzahl eindeutiger Accessions Isoform .22: 1127
+Anzahl eindeutiger Accessions Isoform .23: 1127
+Anzahl eindeutiger Accessions Isoform .24: 1127
+Anzahl eindeutiger Accessions Isoform .25: 1127
+Anzahl eindeutiger Accessions Isoform .26: 1127
+Anzahl eindeutiger Accessions Isoform .27: 1028
+
+Anzahl eindeutiger Gene Isoform .1: 31853
+Anzahl eindeutiger Gene Isoform .2: 10882
+Anzahl eindeutiger Gene Isoform .3: 4855
+Anzahl eindeutiger Gene Isoform .4: 2396
+Anzahl eindeutiger Gene Isoform .5: 1241
+Anzahl eindeutiger Gene Isoform .6: 697
+Anzahl eindeutiger Gene Isoform .7: 399
+Anzahl eindeutiger Gene Isoform .8: 229
+Anzahl eindeutiger Gene Isoform .9: 154
+Anzahl eindeutiger Gene Isoform .10: 94
+Anzahl eindeutiger Gene Isoform .11: 65
+Anzahl eindeutiger Gene Isoform .12: 40
+Anzahl eindeutiger Gene Isoform .13: 27
+Anzahl eindeutiger Gene Isoform .14: 17
+Anzahl eindeutiger Gene Isoform .15: 14
+Anzahl eindeutiger Gene Isoform .16: 9
+Anzahl eindeutiger Gene Isoform .17: 8
+Anzahl eindeutiger Gene Isoform .18: 4
+Anzahl eindeutiger Gene Isoform .19: 4
+Anzahl eindeutiger Gene Isoform .20: 2
+Anzahl eindeutiger Gene Isoform .21: 2
+Anzahl eindeutiger Gene Isoform .22: 2
+Anzahl eindeutiger Gene Isoform .23: 2
+Anzahl eindeutiger Gene Isoform .24: 2
+Anzahl eindeutiger Gene Isoform .25: 2
+Anzahl eindeutiger Gene Isoform .26: 2
+Anzahl eindeutiger Gene Isoform .27: 1
+
+Erstelle Isoform-subsets...
+Isoform .1: 5631345 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_1/isoform_subset.csv
+Isoform .2: 2552312 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_2/isoform_subset.csv
+Isoform .3: 1220493 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_3/isoform_subset.csv
+Isoform .4: 627049 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_4/isoform_subset.csv
+Isoform .5: 335571 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_5/isoform_subset.csv
+Isoform .6: 193680 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_6/isoform_subset.csv
+Isoform .7: 112584 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_7/isoform_subset.csv
+Isoform .8: 66966 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_8/isoform_subset.csv
+Isoform .9: 44672 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_9/isoform_subset.csv
+Isoform .10: 27567 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_10/isoform_subset.csv
+Isoform .11: 18396 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_11/isoform_subset.csv
+Isoform .12: 11662 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_12/isoform_subset.csv
+Isoform .13: 7749 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_13/isoform_subset.csv
+Isoform .14: 5260 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_14/isoform_subset.csv
+Isoform .15: 4551 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_15/isoform_subset.csv
+Isoform .16: 3401 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_16/isoform_subset.csv
+Isoform .17: 3117 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_17/isoform_subset.csv
+Isoform .18: 1663 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_18/isoform_subset.csv
+Isoform .19: 1652 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_19/isoform_subset.csv
+Isoform .20: 390 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_20/isoform_subset.csv
+Isoform .21: 387 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_21/isoform_subset.csv
+Isoform .22: 405 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_22/isoform_subset.csv
+Isoform .23: 384 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_23/isoform_subset.csv
+Isoform .24: 368 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_24/isoform_subset.csv
+Isoform .25: 370 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_25/isoform_subset.csv
+Isoform .26: 366 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_26/isoform_subset.csv
+Isoform .27: 98 Zeilen → gespeichert in results/Arabidopsis_thaliana/csv/isoform_27/isoform_subset.csv
+Analysiere SNP-Effekte...
+SNP-Effekte alle Transkripte - CSV-Inhalt:
+============================================================
+Effect  Raw_Count  Normalized_per_accession
+                                   intron_variant    4002391             190692.619383
+                               synonymous_variant    1462508              95100.714537
+                                 missense_variant    2063379              81399.528634
+                              3_prime_UTR_variant    1364136              58317.491630
+                              5_prime_UTR_variant    1034416              42804.355947
+             splice_region_variant&intron_variant     285728              15112.846696
+               non_coding_transcript_exon_variant     280692              11464.645815
+   5_prime_UTR_premature_start_codon_gain_variant     116352               4948.827313
+         splice_region_variant&synonymous_variant      25699               1384.952423
+                               frameshift_variant      71139               1227.540969
+           missense_variant&splice_region_variant      34199               1205.503965
+                            splice_region_variant      24921               1000.481057
+                                      stop_gained      42270                747.892511
+           splice_acceptor_variant&intron_variant      10978                345.810573
+              splice_donor_variant&intron_variant       9595                253.876652
+                                        stop_lost       3225                166.228194
+                            stop_retained_variant       2976                152.367401
+                      disruptive_inframe_deletion      11133                146.781498
+                     disruptive_inframe_insertion       5414                137.963877
+                   conservative_inframe_insertion       4875                133.824670
+                                       start_lost       3594                116.955947
+splice_region_variant&non_coding_transcript_ex...       3093                116.906608
+                               intragenic_variant       2994                111.683700
+                    frameshift_variant&start_lost       2029                 79.251982
+                  stop_lost&splice_region_variant        958                 68.872247
+                    conservative_inframe_deletion       5693                 68.103965
+                   frameshift_variant&stop_gained       1312                 28.223789
+                     frameshift_variant&stop_lost        695                 26.502203
+         frameshift_variant&splice_region_variant       1235                 25.510132
+      splice_region_variant&stop_retained_variant        505                 21.647577
+                          initiator_codon_variant        665                 19.592070
+                    non_coding_transcript_variant       1184                 15.832599
+splice_acceptor_variant&splice_region_variant&...        578                 15.721586
+                stop_gained&splice_region_variant        958                 11.469604
+                           start_retained_variant        355                 10.981498
+frameshift_variant&stop_lost&splice_region_var...        191                 10.189427
+disruptive_inframe_insertion&splice_region_var...         86                  7.011454
+                 start_lost&splice_region_variant         52                  4.084581
+conservative_inframe_insertion&splice_region_v...         65                  2.441410
+       stop_gained&conservative_inframe_insertion         71                  2.191189
+        start_lost&conservative_inframe_insertion         54                  1.902203
+          stop_gained&disruptive_inframe_deletion        105                  1.469604
+frameshift_variant&splice_acceptor_variant&spl...        169                  1.416740
+conservative_inframe_deletion&splice_region_va...         80                  1.414097
+frameshift_variant&splice_donor_variant&splice...        175                  1.394714
+disruptive_inframe_deletion&splice_region_variant        143                  1.386784
+         start_lost&conservative_inframe_deletion        113                  1.269604
+            stop_lost&disruptive_inframe_deletion         24                  1.220264
+         stop_gained&disruptive_inframe_insertion        107                  1.091630
+          start_lost&disruptive_inframe_insertion         54                  0.785022
+frameshift_variant&start_lost&splice_region_va...         31                  0.728634
+splice_donor_variant&splice_region_variant&int...        105                  0.683700
+splice_acceptor_variant&3_prime_UTR_variant&in...         10                  0.541850
+frameshift_variant&stop_gained&splice_region_v...         21                  0.439648
+          stop_lost&conservative_inframe_deletion         58                  0.311894
+           start_lost&disruptive_inframe_deletion         13                  0.311894
+stop_lost&conservative_inframe_deletion&splice...         14                  0.289868
+splice_acceptor_variant&splice_region_variant&...         20                  0.281057
+splice_acceptor_variant&splice_region_variant&...         10                  0.214978
+splice_acceptor_variant&disruptive_inframe_del...         26                  0.206167
+splice_donor_variant&5_prime_UTR_variant&intro...         30                  0.187665
+splice_donor_variant&conservative_inframe_dele...         29                  0.182379
+stop_gained&conservative_inframe_insertion&spl...          3                  0.174449
+splice_donor_variant&splice_region_variant&3_p...         14                  0.160352
+splice_donor_variant&splice_region_variant&5_p...         22                  0.155947
+splice_acceptor_variant&splice_region_variant&...          8                  0.155066
+           stop_lost&disruptive_inframe_insertion          8                  0.123348
+    initiator_codon_variant&splice_region_variant         10                  0.120705
+splice_acceptor_variant&5_prime_UTR_variant&in...         36                  0.118062
+                        bidirectional_gene_fusion         13                  0.100441
+splice_acceptor_variant&splice_donor_variant&s...          1                  0.081938
+splice_donor_variant&disruptive_inframe_deleti...          9                  0.081057
+splice_donor_variant&splice_region_variant&int...         19                  0.078414
+splice_donor_variant&3_prime_UTR_variant&intro...          3                  0.070485
+stop_lost&disruptive_inframe_deletion&splice_r...          4                  0.038767
+splice_acceptor_variant&conservative_inframe_d...         17                  0.035242
+stop_lost&disruptive_inframe_insertion&splice_...          5                  0.034361
+stop_gained&splice_donor_variant&disruptive_in...          2                  0.003524
+         5_prime_UTR_truncation&exon_loss_variant          2                  0.003524
+start_lost&conservative_inframe_deletion&splic...          1                  0.002643
+stop_gained&disruptive_inframe_insertion&splic...          2                  0.001762
+stop_lost&splice_acceptor_variant&conservative...          2                  0.001762
+frameshift_variant&stop_lost&splice_acceptor_v...          1                  0.000881
+                                      gene_fusion          1                  0.000881
+============================================================
+
+Analyse abgeschlossen. Plot → results/Arabidopsis_thaliana/plots/snp_effects_all.png, CSV → results/Arabidopsis_thaliana/csv/snp_effects_all.csv
+
+Analysiere SNPs pro Gen...
+Gesamtzahl Gene: 32216
+Durchschnitt SNPs pro Gen: 337.84
+Median SNPs pro Gen: 177.0
+
+SNP-Analyse pro Gen abgeschlossen. Ergebnisse in results/Arabidopsis_thaliana/plots
+
+Berechne Allelfrequenzen...
+Allelfrequenzen als DataFrame erstellt und in results/Arabidopsis_thaliana/csv/allele_per_accession.csv gespeichert
+
+Erstelle Allelfrequenz-Visualisierungen...
+Allelfrequenz-Visualisierungen erstellt
+
+Kategorie-Allelfrequenzen als DataFrame erstellt und in results/Arabidopsis_thaliana/csv/category_allele_per_accession.csv gespeichert
+Verfügbare Kategorien: ['Protein-changing', 'Intron', 'Synonymous', 'UTR', 'Splice-related', 'Non-coding', 'Other', 'all_categories']
+
+Kategorie-Verteilungsplot erstellt: results/Arabidopsis_thaliana/plots/category_frequency_distributions.png
+Top-50-Accessions Kategorie-Heatmap erstellt: results/Arabidopsis_thaliana/plots/top50_accessions_category_heatmap.png
+Heatmap zeigt 50 Accessions vs 6 Kategorien
+
+Analysiere Aminosäure-Substitutionen...
+Aminosäure-Substitutionen für .1:
+  - Matrix-Größe: 21x35
+  - Gesamte Substitutionen: 2043127
+
+Aminosäure-Substitutionen für .2:
+  - Matrix-Größe: 21x35
+  - Gesamte Substitutionen: 822436
+
+Aminosäure-Substitutionen für .3:
+  - Matrix-Größe: 21x35
+  - Gesamte Substitutionen: 379044
+
+Aminosäure-Substitutionen für .4:
+  - Matrix-Größe: 21x35
+  - Gesamte Substitutionen: 190058
+
+Aminosäure-Substitutionen für .5:
+  - Matrix-Größe: 21x35
+  - Gesamte Substitutionen: 101784
+
+Aminosäure-Substitutionen für .6:
+  - Matrix-Größe: 21x34
+  - Gesamte Substitutionen: 57729
+
+Aminosäure-Substitutionen für .7:
+  - Matrix-Größe: 21x34
+  - Gesamte Substitutionen: 32917
+
+Aminosäure-Substitutionen für .8:
+  - Matrix-Größe: 21x30
+  - Gesamte Substitutionen: 20211
+
+Aminosäure-Substitutionen für .9:
+  - Matrix-Größe: 21x33
+  - Gesamte Substitutionen: 13983
+
+Aminosäure-Substitutionen für .10:
+  - Matrix-Größe: 21x31
+  - Gesamte Substitutionen: 8603
+
+Aminosäure-Substitutionen für .11:
+  - Matrix-Größe: 21x29
+  - Gesamte Substitutionen: 5681
+
+Aminosäure-Substitutionen für .12:
+  - Matrix-Größe: 21x27
+  - Gesamte Substitutionen: 2897
+
+Aminosäure-Substitutionen für .13:
+  - Matrix-Größe: 21x26
+  - Gesamte Substitutionen: 1991
+
+Aminosäure-Substitutionen für .14:
+  - Matrix-Größe: 20x27
+  - Gesamte Substitutionen: 1223
+
+Aminosäure-Substitutionen für .15:
+  - Matrix-Größe: 20x25
+  - Gesamte Substitutionen: 1109
+
+Aminosäure-Substitutionen für .16:
+  - Matrix-Größe: 20x26
+  - Gesamte Substitutionen: 691
+
+Aminosäure-Substitutionen für .17:
+  - Matrix-Größe: 20x24
+  - Gesamte Substitutionen: 754
+
+Aminosäure-Substitutionen für .18:
+  - Matrix-Größe: 20x22
+  - Gesamte Substitutionen: 381
+
+Aminosäure-Substitutionen für .19:
+  - Matrix-Größe: 19x21
+  - Gesamte Substitutionen: 416
+
+Aminosäure-Substitutionen für .20:
+  - Matrix-Größe: 16x18
+  - Gesamte Substitutionen: 64
+
+Aminosäure-Substitutionen für .21:
+  - Matrix-Größe: 17x19
+  - Gesamte Substitutionen: 68
+
+Aminosäure-Substitutionen für .22:
+  - Matrix-Größe: 14x17
+  - Gesamte Substitutionen: 48
+
+Aminosäure-Substitutionen für .23:
+  - Matrix-Größe: 16x17
+  - Gesamte Substitutionen: 59
+
+Aminosäure-Substitutionen für .24:
+  - Matrix-Größe: 14x17
+  - Gesamte Substitutionen: 49
+
+Aminosäure-Substitutionen für .25:
+  - Matrix-Größe: 15x18
+  - Gesamte Substitutionen: 52
+
+Aminosäure-Substitutionen für .26:
+  - Matrix-Größe: 16x17
+  - Gesamte Substitutionen: 59
+
+Aminosäure-Substitutionen für .27:
+  - Matrix-Größe: 14x14
+  - Gesamte Substitutionen: 28
+
+Aminosäure-Substitutionen für all:
+  - Matrix-Größe: 21x35
+  - Gesamte Substitutionen: 3685462
+
+Analysiere SNP-Dichten...
+ SNP-Dichte-Analyse abgeschlossen. Ergebnisse in: results/Arabidopsis_thaliana/snp_densities
+
+Erstelle finale PDF mit allen Plots...
+Finale PDF erstellt: results/Arabidopsis_thaliana/plots/complete_report.pdf
+Komplette Analyse für Arabidopsis_thaliana abgeschlossen!
+Ergebnisse gespeichert in: results/Arabidopsis_thaliana
+============================================================
