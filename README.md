@@ -98,7 +98,11 @@ The provided example folders are intended to demonstrate the expected structure,
 
 ## HPC Configuration
 
-Several HPC configurations and job scheduling strategies were evaluated to optimize runtime and make efficient use of the available computational resources. The corresponding **SLURM job scripts (`.sh` files)** used for these experiments are included in the **`HPC`** directory and can serve as examples for running the pipeline on HPC clusters.
+Several HPC configurations and job scheduling strategies were evaluated to optimize runtime and make efficient use of the available computational resources. The corresponding **SLURM job scripts (`.sh` files)** are included in the **`HPC`** directory.
+
+Please note that these scripts are provided only as examples. They may need to be adapted depending on the specific HPC cluster, available resources, module system, queue/partition names, and job scheduling policies.
+
+In addition, a PDF document describing the HPC setup and usage is provided to support users who want to run the pipeline in an HPC environment.
 
 
 
