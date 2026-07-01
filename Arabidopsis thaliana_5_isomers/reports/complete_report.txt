@@ -1,0 +1,143 @@
+SNP-Analyse Report für Arabidopsis thaliana
+============================================================
+
+Starte komplette SNP-Analyse für Arabidopsis thaliana
+============================================================
+
+Lade Daten...
+Lade Datei: ./dataset1/combine_4_4.csv
+Eingelesen: 5998 Zeilen aus 1 Dateien
+
+Erstelle Grundstatistiken...
+Effekt-Zählungen erstellt:
+                                                      Effect  Raw_Count
+0                                             intron_variant       1993
+1                                           missense_variant       1689
+2                                         synonymous_variant        801
+3                         non_coding_transcript_exon_variant        393
+4                                        3_prime_UTR_variant        340
+5                                        5_prime_UTR_variant        253
+6                       splice_region_variant&intron_variant        180
+7                                                stop_gained        105
+8                                         frameshift_variant         68
+9             5_prime_UTR_premature_start_codon_gain_variant         37
+10                    missense_variant&splice_region_variant         34
+11                       splice_donor_variant&intron_variant         22
+12                    splice_acceptor_variant&intron_variant         17
+13                  splice_region_variant&synonymous_variant         13
+14                                                start_lost          9
+15                               disruptive_inframe_deletion          9
+16  splice_region_variant&non_coding_transcript_exon_variant          7
+17                                     splice_region_variant          6
+18                           stop_lost&splice_region_variant          5
+19                                                 stop_lost          4
+20                              disruptive_inframe_insertion          4
+21                            frameshift_variant&stop_gained          3
+22                             conservative_inframe_deletion          2
+23                         stop_gained&splice_region_variant          2
+24                  frameshift_variant&splice_region_variant          2
+
+Gespeichert: results/Arabidopsis thaliana/csv/effect_counts.csv
+Plot als PNG gespeichert: results/Arabidopsis thaliana/plots/effect_counts.png
+Analysiere Accessions...
+Anzahl eindeutiger Accessions: 1131
+Anzahl eindeutiger Accessions: 1131
+
+Anzahl eindeutiger Accessions Isoform .1: 1131
+Anzahl eindeutiger Accessions Isoform .2: 1130
+Anzahl eindeutiger Accessions Isoform .3: 935
+Anzahl eindeutiger Accessions Isoform .4: 700
+Anzahl eindeutiger Accessions Isoform .5: 850
+
+Anzahl eindeutiger Gene Isoform .1: 17
+Anzahl eindeutiger Gene Isoform .2: 5
+Anzahl eindeutiger Gene Isoform .3: 2
+Anzahl eindeutiger Gene Isoform .4: 1
+Anzahl eindeutiger Gene Isoform .5: 1
+
+Erstelle Isoform-subsets...
+Isoform .1: 4539 Zeilen → gespeichert in results/Arabidopsis thaliana/csv/isoform_1/isoform_subset.csv
+Isoform .2: 865 Zeilen → gespeichert in results/Arabidopsis thaliana/csv/isoform_2/isoform_subset.csv
+Isoform .3: 296 Zeilen → gespeichert in results/Arabidopsis thaliana/csv/isoform_3/isoform_subset.csv
+Isoform .4: 125 Zeilen → gespeichert in results/Arabidopsis thaliana/csv/isoform_4/isoform_subset.csv
+Isoform .5: 173 Zeilen → gespeichert in results/Arabidopsis thaliana/csv/isoform_5/isoform_subset.csv
+Analysiere SNP-Effekte...
+SNP-Effekte alle Transkripte - CSV-Inhalt:
+============================================================
+                                                  Effect  Raw_Count  Normalized_per_accession
+                                          intron_variant       1993                 31.892131
+                                        missense_variant       1689                 28.709991
+                                      synonymous_variant        801                 18.641026
+                      non_coding_transcript_exon_variant        393                  9.623342
+                                     3_prime_UTR_variant        340                  6.977896
+                    splice_region_variant&intron_variant        180                  4.874447
+                                     5_prime_UTR_variant        253                  3.881521
+                         stop_lost&splice_region_variant          5                  1.972591
+                                             stop_gained        105                  1.426172
+                                      frameshift_variant         68                  1.124668
+          5_prime_UTR_premature_start_codon_gain_variant         37                  0.308576
+                  missense_variant&splice_region_variant         34                  0.219275
+                     splice_donor_variant&intron_variant         22                  0.203360
+                splice_region_variant&synonymous_variant         13                  0.138815
+splice_region_variant&non_coding_transcript_exon_variant          7                  0.107869
+                  splice_acceptor_variant&intron_variant         17                  0.105217
+                                              start_lost          9                  0.090186
+                             disruptive_inframe_deletion          9                  0.061008
+                                               stop_lost          4                  0.042440
+                                   splice_region_variant          6                  0.036251
+                frameshift_variant&splice_region_variant          2                  0.034483
+                          frameshift_variant&stop_gained          3                  0.019452
+                            disruptive_inframe_insertion          4                  0.018568
+                       stop_gained&splice_region_variant          2                  0.009726
+                           conservative_inframe_deletion          2                  0.001768
+============================================================
+
+Analyse abgeschlossen. Plot → results/Arabidopsis thaliana/plots/snp_effects_all.png, CSV → results/Arabidopsis thaliana/csv/snp_effects_all.csv
+
+Analysiere SNPs pro Gen...
+Gesamtzahl Gene: 17
+Durchschnitt SNPs pro Gen: 352.82
+Median SNPs pro Gen: 198.0
+
+SNP-Analyse pro Gen abgeschlossen. Ergebnisse in results/Arabidopsis thaliana/plots
+
+Berechne Allelfrequenzen...
+Allelfrequenzen als DataFrame erstellt und in results/Arabidopsis thaliana/csv/allele_per_accession.csv gespeichert
+
+Erstelle Allelfrequenz-Visualisierungen...
+Allelfrequenz-Visualisierungen erstellt
+
+Kategorie-Allelfrequenzen als DataFrame erstellt und in results/Arabidopsis thaliana/csv/category_allele_per_accession.csv gespeichert
+Verfügbare Kategorien: ['Protein-changing', 'Synonymous', 'Intron', 'UTR', 'Splice-related', 'Non-coding', 'all_categories']
+
+Kategorie-Verteilungsplot erstellt: results/Arabidopsis thaliana/plots/category_frequency_distributions.png
+Top-50-Accessions Kategorie-Heatmap erstellt: results/Arabidopsis thaliana/plots/top50_accessions_category_heatmap.png
+Heatmap zeigt 50 Accessions vs 6 Kategorien
+
+Analysiere Aminosäure-Substitutionen...
+Aminosäure-Substitutionen für .1:
+  - Matrix-Größe: 21x25
+  - Gesamte Substitutionen: 2340
+
+Aminosäure-Substitutionen für .2:
+  - Matrix-Größe: 21x25
+  - Gesamte Substitutionen: 231
+
+Aminosäure-Substitutionen für .3:
+  - Matrix-Größe: 18x17
+  - Gesamte Substitutionen: 55
+
+Isoform .4: keine gültigen Aminosäure-SNPs
+Isoform .5: keine gültigen Aminosäure-SNPs
+Aminosäure-Substitutionen für all:
+  - Matrix-Größe: 21x28
+  - Gesamte Substitutionen: 2626
+
+Analysiere SNP-Dichten...
+ SNP-Dichte-Analyse abgeschlossen. Ergebnisse in: results/Arabidopsis thaliana/snp_densities
+
+Erstelle finale PDF mit allen Plots...
+Finale PDF erstellt: results/Arabidopsis thaliana/plots/complete_report.pdf
+Komplette Analyse für Arabidopsis thaliana abgeschlossen!
+Ergebnisse gespeichert in: results/Arabidopsis thaliana
+============================================================

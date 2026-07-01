@@ -1,0 +1,103 @@
+================================================================================
+*** Analyse für Isoform .1 ***
+Isoform .1: 4539 Varianten insgesamt
+Unique Varianten: 4064
+Anzahl Gene: 17
+Top Effekte normalisiert nach der Dichte:
+                                        effect  effect_category        length_type  density isoform
+                              missense_variant Protein-changing            cds_len 0.107574      .1
+                                intron_variant           Intron           cdna_len 0.082863      .1
+                           3_prime_UTR_variant              UTR cdna_len - cds_len 0.064280      .1
+                           5_prime_UTR_variant              UTR cdna_len - cds_len 0.056514      .1
+                            synonymous_variant       Synonymous            cds_len 0.047475      .1
+            non_coding_transcript_exon_variant       Non-coding           cdna_len 0.010112      .1
+          splice_region_variant&intron_variant   Splice-related           cdna_len 0.007091      .1
+                                   stop_gained Protein-changing            cds_len 0.006041      .1
+                            frameshift_variant Protein-changing            cds_len 0.004569      .1
+5_prime_UTR_premature_start_codon_gain_variant Protein-changing            cds_len 0.002014      .1
+Durchschnittliche SNP-Dichte pro Gen:
+0.001838
+================================================================================
+*** Analyse für Isoform .2 ***
+Isoform .2: 865 Varianten insgesamt
+Unique Varianten: 801
+Anzahl Gene: 5
+Top Effekte normalisiert nach der Dichte:
+                                        effect  effect_category        length_type  density isoform
+                           3_prime_UTR_variant              UTR cdna_len - cds_len 0.078000      .2
+                                intron_variant           Intron           cdna_len 0.052069      .2
+                              missense_variant Protein-changing            cds_len 0.038676      .2
+                           5_prime_UTR_variant              UTR cdna_len - cds_len 0.030000      .2
+                            synonymous_variant       Synonymous            cds_len 0.026549      .2
+            non_coding_transcript_exon_variant       Non-coding           cdna_len 0.012077      .2
+          splice_region_variant&intron_variant   Splice-related           cdna_len 0.005543      .2
+5_prime_UTR_premature_start_codon_gain_variant Protein-changing            cds_len 0.002622      .2
+                            frameshift_variant Protein-changing            cds_len 0.002294      .2
+                                   stop_gained Protein-changing            cds_len 0.000983      .2
+Durchschnittliche SNP-Dichte pro Gen:
+0.001796
+================================================================================
+*** Analyse für Isoform .3 ***
+Isoform .3: 296 Varianten insgesamt
+Unique Varianten: 284
+Anzahl Gene: 2
+Top Effekte normalisiert nach der Dichte:
+                                        effect  effect_category        length_type  density isoform
+                                intron_variant           Intron           cdna_len 0.102414      .3
+                           5_prime_UTR_variant              UTR cdna_len - cds_len 0.044643      .3
+            non_coding_transcript_exon_variant       Non-coding           cdna_len 0.041697      .3
+                              missense_variant Protein-changing            cds_len 0.027122      .3
+                           3_prime_UTR_variant              UTR cdna_len - cds_len 0.026786      .3
+                            synonymous_variant       Synonymous            cds_len 0.019248      .3
+          splice_region_variant&intron_variant   Splice-related           cdna_len 0.008778      .3
+                   disruptive_inframe_deletion Protein-changing            cds_len 0.001750      .3
+           splice_donor_variant&intron_variant   Splice-related           cdna_len 0.001463      .3
+5_prime_UTR_premature_start_codon_gain_variant Protein-changing            cds_len 0.000875      .3
+Durchschnittliche SNP-Dichte pro Gen:
+0.001241
+================================================================================
+*** Analyse für Isoform .4 ***
+Isoform .4: 125 Varianten insgesamt
+Unique Varianten: 121
+Anzahl Gene: 1
+Top Effekte normalisiert nach der Dichte:
+                              effect effect_category length_type  density isoform
+                      intron_variant          Intron    cdna_len      NaN      .4
+  non_coding_transcript_exon_variant      Non-coding    cdna_len      NaN      .4
+ splice_donor_variant&intron_variant  Splice-related    cdna_len      NaN      .4
+splice_region_variant&intron_variant  Splice-related    cdna_len      NaN      .4
+Durchschnittliche SNP-Dichte pro Gen:
+nan
+================================================================================
+*** Analyse für Isoform .5 ***
+Isoform .5: 173 Varianten insgesamt
+Unique Varianten: 165
+Anzahl Gene: 1
+Top Effekte normalisiert nach der Dichte:
+                                                  effect effect_category length_type  density isoform
+                                          intron_variant          Intron    cdna_len      NaN      .5
+                      non_coding_transcript_exon_variant      Non-coding    cdna_len      NaN      .5
+                     splice_donor_variant&intron_variant  Splice-related    cdna_len      NaN      .5
+                    splice_region_variant&intron_variant  Splice-related    cdna_len      NaN      .5
+splice_region_variant&non_coding_transcript_exon_variant  Splice-related    cdna_len      NaN      .5
+Durchschnittliche SNP-Dichte pro Gen:
+nan
+================================================================================
+*** Analyse für Isoform all ***
+Isoform all: 5998 Varianten insgesamt
+Unique Varianten: 4169
+Anzahl Gene: 17
+Top Effekte normalisiert nach der Dichte:
+                                        effect  effect_category        length_type  density isoform
+                              missense_variant Protein-changing            cds_len 0.107275     all
+                                intron_variant           Intron           cdna_len 0.080740     all
+                           3_prime_UTR_variant              UTR cdna_len - cds_len 0.068562     all
+                            synonymous_variant       Synonymous            cds_len 0.047343     all
+                           5_prime_UTR_variant              UTR cdna_len - cds_len 0.043813     all
+            non_coding_transcript_exon_variant       Non-coding           cdna_len 0.011915     all
+          splice_region_variant&intron_variant   Splice-related           cdna_len 0.006845     all
+                                   stop_gained Protein-changing            cds_len 0.006024     all
+                            frameshift_variant Protein-changing            cds_len 0.004557     all
+5_prime_UTR_premature_start_codon_gain_variant Protein-changing            cds_len 0.002008     all
+Durchschnittliche SNP-Dichte pro Gen:
+0.001712

@@ -3,18 +3,19 @@ import glob
 import os
 import ast
 import numpy as np
+
+# HPC-optimierte matplotlib Konfiguration (kein Display)
+import matplotlib
+matplotlib.use('Agg')  # Agg Backend für HPC ohne Display
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.backends.backend_pdf import PdfPages
 from collections import Counter
 import sys
 from io import StringIO
-from datetime import datetime
-import warnings
 
-# Unterdrücke spezifische Warnungen
-warnings.filterwarnings('ignore', category=RuntimeWarning, message='divide by zero encountered in log')
-warnings.filterwarnings('ignore', category=RuntimeWarning, message='invalid value encountered in log')
+# Zusätzliche HPC-Optimierungen
+plt.rcParams['figure.max_open_warning'] = 0  # Keine Warnungen für viele Plots
 
 class SNPAnalysisPipeline:
     
@@ -89,138 +90,38 @@ class SNPAnalysisPipeline:
 
     def count_effects(self, column='eff', save_path=None):
         """
-        Zählt die Vorkommen pro Effekt-Typ und nach den 10 Kategorien.
-        
-        1. Zählt rohe Effekte (wie bisher)
-        2. Zählt zusätzlich nach den 10 definierten Kategorien
-        3. Speichert beide Ergebnisse im Report
+        Zählt die Vorkommen pro Kategorie in einer Spalte und speichert das Ergebnis (optional).
         """
-        # === 1. ROHE EFFEKT-ZÄHLUNG (wie bisher) ===
         counts = self.df[column].value_counts().reset_index()
         counts.columns = ['Effect', 'Raw_Count']
         
         with open(self.report_file, "a") as f:
-            f.write("=" * 60 + "\n")
-            f.write("EFFEKT-ZÄHLUNGEN\n")
-            f.write("=" * 60 + "\n\n")
-            f.write("1. Rohe Effekt-Zählungen (alle Effekt-Typen):\n")
-            f.write(counts.to_string(index=False))
-            f.write("\n\n")
-        
-        # === 2. KATEGORIE-ZÄHLUNG (10 disjunkte Kategorien) ===
-        category_counts = Counter()
-        
-        # Jeder SNP wird GENAU EINER Kategorie zugeordnet
-        for idx, row in self.df.iterrows():
-            category = self.classify_effect(row[column])
-            category_counts[category] += 1
-        
-        # DataFrame für Kategorien erstellen
-        category_df = pd.DataFrame([
-            {'Category': cat, 'Count': count} 
-            for cat, count in category_counts.most_common()
-        ])
-        
-        with open(self.report_file, "a") as f:
-            f.write("2. Kategorie-Zählungen (10 Kategorien):\n")
-            f.write(category_df.to_string(index=False))
-            f.write("\n\n")
-            f.write("=" * 60 + "\n\n")
+            f.write(f"Effekt-Zählungen erstellt:\n{counts.to_string()}\n\n")
 
-        # CSV speichern (rohe Effekte)
         if save_path:
             self.save_dataframe(counts, save_path)
-            
-            # Zusätzlich Kategorien-CSV speichern
-            category_csv_path = save_path.replace('.csv', '_categories.csv')
-            self.save_dataframe(category_df, category_csv_path)
 
         return counts
 
     def save_effect_plot(self, effect_counts, pdf_name="complete_report.pdf"):
-        """Erstellt und speichert Effekt-Plots (rohe Effekte + Kategorien)."""
-        
-        # === 1. PLOT FÜR ROHE EFFEKTE (wie bisher) ===
-        fig1, ax1 = plt.subplots(figsize=(16, 10))
-        sns.barplot(data=effect_counts, x='Effect', y='Raw_Count', ax=ax1)
-        ax1.set_yscale("log")
-        ax1.set_title(f'Distribution of SNP Effects (raw) - {self.dataset_name} (log scale)')
+        """Erstellt und speichert Effekt-Plots."""
+        fig, ax = plt.subplots(figsize=(16, 10))
+        sns.barplot(data=effect_counts, x='Effect', y='Raw_Count', ax=ax)
+        ax.set_yscale("log")
+        ax.set_title(f'Verteilung der SNP-Effekte - {self.dataset_name} (log-Skala)')
         plt.xticks(rotation=45, ha='right')
-        
-        # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-        y_min, y_max = ax1.get_ylim()
-        max_value = effect_counts['Raw_Count'].max()
-        threshold = max_value * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-        
-        for i, (idx, row) in enumerate(effect_counts.iterrows()):
-            value = row['Raw_Count']
-            if value < threshold:
-                # Kurze Balken: Werte oberhalb
-                ax1.text(i, value * 1.1, str(value), ha='center', va='bottom', 
-                        fontweight='bold', rotation=90, fontsize=8, color='black')
-            else:
-                # Lange Balken: Werte auf dem Balken
-                ax1.text(i, value * 0.5, str(value), ha='center', va='center', 
-                        fontweight='bold', rotation=90, fontsize=8, color='white')
-        
         plt.tight_layout()
 
         # PNG speichern
         png_path = os.path.join(self.plots_dir, "effect_counts.png")
-        fig1.savefig(png_path, bbox_inches='tight', dpi=300)
+        fig.savefig(png_path, bbox_inches='tight', dpi=300)
         with open(self.report_file, "a") as f:
-            f.write(f"Plot für rohe Effekte gespeichert: {png_path}\n")
+            f.write(f"Plot als PNG gespeichert: {png_path}\n")
 
         # Zur PDF hinzufügen
-        self.add_plot_to_pdf(fig1)
-        plt.close(fig1)
-        
-        # === 2. PLOT FÜR KATEGORIEN (10 disjunkte Kategorien) ===
-        # Kategorien zählen (gleiche Logik wie in count_effects)
-        category_counts = Counter()
-        for idx, row in self.df.iterrows():
-            category = self.classify_effect(row['eff'])
-            category_counts[category] += 1
-        
-        category_df = pd.DataFrame([
-            {'Category': cat, 'Count': count} 
-            for cat, count in category_counts.most_common()
-        ])
-        
-        # Kategorien-Plot erstellen
-        fig2, ax2 = plt.subplots(figsize=(14, 8))
-        sns.barplot(data=category_df, x='Category', y='Count', ax=ax2)
-        ax2.set_yscale("log")
-        ax2.set_title(f'Distribution of 10 Effect Categories - {self.dataset_name} (log scale)')
-        plt.xticks(rotation=45, ha='right')
-        
-        # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-        y_min, y_max = ax2.get_ylim()
-        max_value = category_df['Count'].max()
-        threshold = max_value * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-        
-        for i, (idx, row) in enumerate(category_df.iterrows()):
-            value = row['Count']
-            if value < threshold:
-                # Kurze Balken: Werte oberhalb
-                ax2.text(i, value * 1.1, str(value), ha='center', va='bottom', 
-                        fontweight='bold', rotation=90, fontsize=8, color='black')
-            else:
-                # Lange Balken: Werte auf dem Balken
-                ax2.text(i, value * 0.5, str(value), ha='center', va='center', 
-                        fontweight='bold', rotation=90, fontsize=8, color='white')
-        
-        plt.tight_layout()
+        self.add_plot_to_pdf(fig)
 
-        # PNG speichern
-        category_png_path = os.path.join(self.plots_dir, "effect_categories.png")
-        fig2.savefig(category_png_path, bbox_inches='tight', dpi=300)
-        with open(self.report_file, "a") as f:
-            f.write(f"Plot für Kategorien gespeichert: {category_png_path}\n")
-
-        # Zur PDF hinzufügen
-        self.add_plot_to_pdf(fig2)
-        plt.close(fig2)
+        plt.close(fig)
         
         # PDF-Pfad für spätere Verwendung speichern
         self.pdf_report_path = os.path.join(self.plots_dir, pdf_name)
@@ -392,7 +293,7 @@ class SNPAnalysisPipeline:
             sns.barplot(data=result, x='Effect', y='Raw_Count', color='skyblue')
             plt.xticks(rotation=45, ha='right')
             plt.yscale("log")
-            plt.title(f'SNP Effect Types Isoform {iso} - {self.dataset_name} (log scale)')
+            plt.title(f'SNP Effekttypen Isoform {iso} - {self.dataset_name} (log-Skala)')
             plt.tight_layout()
             
             # PNG speichern
@@ -437,25 +338,7 @@ class SNPAnalysisPipeline:
         sns.barplot(data=result, x='Effect', y='Raw_Count', color='skyblue')
         plt.xticks(rotation=45, ha='right')
         plt.yscale("log") # logairthmiert, weil sonst die Verteilung Schiefe hat
-        plt.title(f'SNP Effect Types - All Transcripts - {self.dataset_name} (log scale)')
-        
-        # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-        ax = plt.gca()
-        y_min, y_max = ax.get_ylim()
-        max_value = result['Raw_Count'].max()
-        threshold = max_value * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-        
-        for i, (idx, row) in enumerate(result.iterrows()):
-            value = row['Raw_Count']
-            if value < threshold:
-                # Kurze Balken: Werte oberhalb
-                ax.text(i, value * 1.1, str(value), ha='center', va='bottom', 
-                        fontweight='bold', rotation=90, fontsize=8, color='black')
-            else:
-                # Lange Balken: Werte auf dem Balken
-                ax.text(i, value * 0.5, str(value), ha='center', va='center', 
-                        fontweight='bold', rotation=90, fontsize=8, color='white')
-        
+        plt.title(f'SNP Effekttypen - alle Transkripte - {self.dataset_name} (log-Skala)')
         plt.tight_layout()
         
         # PNG speichern
@@ -495,9 +378,9 @@ class SNPAnalysisPipeline:
         fig_hist = plt.figure(figsize=(12, 8))
         plt.hist(snp_counts_per_gene['num_snps'], bins=bins, color='skyblue', edgecolor='black')
         plt.xscale('log')
-        plt.xlabel("Number of SNPs per Gene (log scale)")
-        plt.ylabel("Number of Genes")
-        plt.title(f"Distribution of SNP Counts per Gene - {self.dataset_name}")
+        plt.xlabel("Anzahl SNPs pro Gen (log-Skala)")
+        plt.ylabel("Anzahl Gene")
+        plt.title(f"Verteilung der SNP-Anzahlen pro Gen - {self.dataset_name}")
         plt.grid(axis='y', linestyle='--', alpha=0.7)
         plt.tight_layout()
         
@@ -514,9 +397,9 @@ class SNPAnalysisPipeline:
         fig_top = plt.figure(figsize=(12, 8))
         plt.barh(top_genes['gene_id'], top_genes['num_snps'])
         plt.xscale('log')
-        plt.xlabel("Number of SNPs (log scale)")
-        plt.ylabel("Gene")
-        plt.title(f"Top {top_n} Genes with Most SNPs - {self.dataset_name}")
+        plt.xlabel("Anzahl SNPs (log-Skala)")
+        plt.ylabel("Gen")
+        plt.title(f"Top {top_n} Gene mit den meisten SNPs - {self.dataset_name}")
         plt.gca().invert_yaxis()
         plt.tight_layout()
         
@@ -580,21 +463,8 @@ class SNPAnalysisPipeline:
 
     def calculate_category_frequencies_per_accession(self, genotypes_col='genotypes', snp_effects_col='eff'):
         """
-        Berechnet Allelfrequenzen pro Accession für alle Effekt-Kategorien.
-        
-        Berechnet Frequenzen für alle 10 disjunkten Kategorien:
-        1. Splice-related-coding-synonymous
-        2. Splice-related-coding-non-synonymous
-        3. Splice-related-non-coding
-        4. Missense
-        5. Protein-changing-non-missense
-        6. Synonymous
-        7. UTR
-        8. Intron
-        9. Non-coding
-        10. Other
-        
-        Hinweis: Jeder SNP wird GENAU EINER Kategorie zugeordnet (disjunkt).
+        Berechnet Allelfrequenzen pro Accession für die 6 Effekt-Kategorien.
+        Ähnlich zu calculate_allele_frequencies_per_accession, aber gruppiert nach Kategorien.
         """
         def convert_to_list(x):
             if isinstance(x, str):
@@ -615,36 +485,23 @@ class SNPAnalysisPipeline:
         
         for idx, row in df.iterrows():
             accessions = row['genotypes_list']
-            category = row['effect_category']  # Jetzt ein String (disjunkt!)
+            category = row['effect_category']
             
             for accession in accessions:
                 if accession not in accession_category_frequencies:
                     accession_category_frequencies[accession] = Counter()
-                # Jeder SNP hat genau EINE Kategorie
                 accession_category_frequencies[accession][category] += 1
         
         df_category_result = pd.DataFrame.from_dict(accession_category_frequencies, orient='index').fillna(0).astype(int)
         df_category_result.index.name = 'accession'
         
-        # Alle 10 disjunkten Kategorien sicherstellen
-        all_categories = [
-            'Splice-related-coding-synonymous',
-            'Splice-related-coding-non-synonymous', 
-            'Splice-related-non-coding',
-            'Missense',
-            'Protein-changing-non-missense',
-            'Synonymous',
-            'UTR',
-            'Intron',
-            'Non-coding',
-            'Other'
-        ]
-        
-        for cat in all_categories:
+        # Die 6 Hauptkategorien sicherstellen
+        categories = ['Protein-changing', 'Synonymous', 'Splice-related', 'UTR', 'Intron', 'Non-coding']
+        for cat in categories:
             if cat not in df_category_result.columns:
                 df_category_result[cat] = 0
         
-        df_category_result['all_categories'] = df_category_result[all_categories].sum(axis=1)
+        df_category_result['all_categories'] = df_category_result[categories].sum(axis=1)
         
         # CSV speichern
         csv_file = os.path.join(self.csv_dir, "category_allele_per_accession.csv")
@@ -719,15 +576,15 @@ class SNPAnalysisPipeline:
                         ax.hist(data_clean, bins=30, alpha=0.7, color='skyblue', edgecolor='black')
                 
                 ax.set_title(f'{effect}\n(Σ={effect_sums[effect]:.0f})', fontsize=10)
-                ax.set_xlabel('Number of SNPs per Accession')
-                ax.set_ylabel('Number of Accessions')
+                ax.set_xlabel('Anzahl SNPs pro Accession')
+                ax.set_ylabel('Anzahl Accessions')
                 ax.grid(True, alpha=0.3)
         
         # Leere Subplots ausblenden
         for i in range(len(top_effects), len(axes)):
             axes[i].set_visible(False)
         
-        plt.suptitle(f'Distribution of SNP Effects across All Accessions - {self.dataset_name}', 
+        plt.suptitle(f'Verteilung der SNP-Effekte über alle Accessions - {self.dataset_name}', 
                      fontsize=16, y=0.98)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         
@@ -739,27 +596,17 @@ class SNPAnalysisPipeline:
 
     def _plot_category_frequency_histograms(self, df_category_freq):
         """
-        Erstellt Histogramme für die Verteilung der 10 disjunkten Effekt-Kategorien über alle Accessions.
+        Erstellt Histogramme für die Verteilung der 6 Effekt-Kategorien über alle Accessions.
+        Ähnlich zu _plot_effect_type_distributions, aber für die zusammengefassten Kategorien.
         """
-        # Alle 10 disjunkten Kategorien
-        categories = [
-            'Splice-related-coding-synonymous',
-            'Splice-related-coding-non-synonymous',
-            'Splice-related-non-coding',
-            'Missense',
-            'Protein-changing-non-missense',
-            'Synonymous',
-            'UTR',
-            'Intron',
-            'Non-coding',
-            'Other'
-        ]
+        # Die 6 Hauptkategorien
+        categories = ['Protein-changing', 'Synonymous', 'Splice-related', 'UTR', 'Intron', 'Non-coding']
         
         # Nur verfügbare Kategorien verwenden
         available_categories = [cat for cat in categories if cat in df_category_freq.columns]
         
-        # 2x5 Subplot-Layout für die 10 Kategorien
-        fig, axes = plt.subplots(2, 5, figsize=(25, 10))
+        # 2x3 Subplot-Layout für die 6 Kategorien
+        fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         axes = axes.flatten()
         
         # Statistiken für jede Kategorie berechnen
@@ -783,15 +630,15 @@ class SNPAnalysisPipeline:
                         ax.hist(data_clean, bins=30, alpha=0.7, color=plt.cm.Set3(i), edgecolor='black')
                 
                 ax.set_title(f'{category}\n(Σ={category_sums[category]:.0f})', fontsize=12, fontweight='bold')
-                ax.set_xlabel('Number of SNPs per Accession')
-                ax.set_ylabel('Number of Accessions')
+                ax.set_xlabel('Anzahl SNPs pro Accession')
+                ax.set_ylabel('Anzahl Accessions')
                 ax.grid(True, alpha=0.3)
         
         # Leere Subplots ausblenden (falls weniger als 6 Kategorien)
         for i in range(len(available_categories), len(axes)):
             axes[i].set_visible(False)
         
-        plt.suptitle(f'Distribution of 10 Disjoint SNP Categories across All Accessions - {self.dataset_name}', 
+        plt.suptitle(f'Verteilung der SNP-Effekt-Kategorien über alle Accessions - {self.dataset_name}', 
                      fontsize=16, y=0.98)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         
@@ -807,21 +654,11 @@ class SNPAnalysisPipeline:
 
     def _plot_top_accessions_category_heatmap(self, df_category_freq, top_n=50):
         """
-        Erstellt eine Heatmap der Top-N Accessions vs 10 disjunkte Kategorien.
+        Erstellt eine Heatmap der Top-N Accessions vs 6 Hauptkategorien.
+        Ähnlich zu _plot_top_accessions_heatmap, aber für die zusammengefassten Kategorien.
         """
-        # Alle 10 disjunkten Kategorien
-        categories = [
-            'Splice-related-coding-synonymous',
-            'Splice-related-coding-non-synonymous',
-            'Splice-related-non-coding',
-            'Missense',
-            'Protein-changing-non-missense',
-            'Synonymous',
-            'UTR',
-            'Intron',
-            'Non-coding',
-            'Other'
-        ]
+        # Die 6 Hauptkategorien
+        categories = ['Protein-changing', 'Synonymous', 'Splice-related', 'UTR', 'Intron', 'Non-coding']
         
         # Nur verfügbare Kategorien verwenden
         available_categories = [cat for cat in categories if cat in df_category_freq.columns]
@@ -843,8 +680,8 @@ class SNPAnalysisPipeline:
         # Heatmap erstellen
         fig, ax = plt.subplots(figsize=(20, 8))  # Breiter statt höher wegen 50 Accessions auf X-Achse
         
-        # Log-Transformation für bessere Visualisierung (ohne +1)
-        heatmap_data_log = np.log(heatmap_data_transposed)
+        # Log-Transformation für bessere Visualisierung
+        heatmap_data_log = np.log1p(heatmap_data_transposed)
         
         # NaN und infinite Werte behandeln
         heatmap_data_log = heatmap_data_log.replace([np.inf, -np.inf], np.nan)
@@ -853,12 +690,12 @@ class SNPAnalysisPipeline:
                    annot=False,  # Keine Zahlen bei 50 Accessions (zu viel)
                    cmap='viridis', 
                    ax=ax,
-                   cbar_kws={'label': 'log(SNP count)'})
+                   cbar_kws={'label': 'log(SNP count + 1)'})
         
-        ax.set_title(f'10 Disjoint SNP Categories vs Top {top_n} Accessions - {self.dataset_name}', 
+        ax.set_title(f'6 SNP-Effekt-Kategorien vs Top {top_n} Accessions - {self.dataset_name}', 
                      fontsize=14, fontweight='bold')
         ax.set_xlabel('Accessions', fontsize=12)
-        ax.set_ylabel('SNP Effect Categories', fontsize=12)
+        ax.set_ylabel('SNP-Effekt-Kategorien', fontsize=12)
         
         # X-Achse-Labels rotieren für bessere Lesbarkeit (50 Accessions)
         plt.xticks(rotation=90, ha='center', fontsize=6)  # Kleine Schrift für 50 Accessions
@@ -895,8 +732,8 @@ class SNPAnalysisPipeline:
         # Heatmap erstellen
         fig, ax = plt.subplots(figsize=(16, 12))
         
-        # Log-Transformation für bessere Visualisierung (ohne +1)
-        heatmap_data_log = np.log(heatmap_data)
+        # Log-Transformation für bessere Visualisierung
+        heatmap_data_log = np.log1p(heatmap_data)
         
         # NaN und infinite Werte behandeln
         heatmap_data_log = heatmap_data_log.replace([np.inf, -np.inf], np.nan)
@@ -905,11 +742,11 @@ class SNPAnalysisPipeline:
                    annot=False, 
                    cmap='viridis', 
                    ax=ax,
-                   cbar_kws={'label': 'log(SNP count)'})
+                   cbar_kws={'label': 'log(SNP count + 1)'})
         
-        ax.set_title(f'Top {top_n} Accessions vs Top 15 SNP Effects - {self.dataset_name}', 
+        ax.set_title(f'Top {top_n} Accessions vs Top 15 SNP-Effekte - {self.dataset_name}', 
                      fontsize=14)
-        ax.set_xlabel('SNP Effect Types')
+        ax.set_xlabel('SNP-Effekt-Typen')
         ax.set_ylabel('Accessions')
         
         # X-Achse-Labels rotieren
@@ -952,27 +789,27 @@ class SNPAnalysisPipeline:
         
         # 1. Gesamtzahl SNPs pro Effekt
         axes[0,0].barh(stats_df['effect'], stats_df['total_snps'], color='lightcoral')
-        axes[0,0].set_title('Total SNP Count per Effect Type')
-        axes[0,0].set_xlabel('Number of SNPs')
+        axes[0,0].set_title('Gesamtanzahl SNPs pro Effekt-Typ')
+        axes[0,0].set_xlabel('Anzahl SNPs')
         axes[0,0].set_xscale('log')
         
         # 2. Anzahl Accessions mit diesem Effekt
         axes[0,1].barh(stats_df['effect'], stats_df['nonzero_count'], color='lightgreen')
-        axes[0,1].set_title('Number of Accessions with at least 1 SNP')
-        axes[0,1].set_xlabel('Number of Accessions')
+        axes[0,1].set_title('Anzahl Accessions mit mindestens 1 SNP')
+        axes[0,1].set_xlabel('Anzahl Accessions')
         
         
         
         # 3. Durchschnittliche SNPs pro Accession
         axes[1,0].barh(stats_df['effect'], stats_df['mean'], color='lightblue')
-        axes[1,0].set_title('Average SNPs per Accession')
-        axes[1,0].set_xlabel('Average')
+        axes[1,0].set_title('Durchschnittliche SNPs pro Accession')
+        axes[1,0].set_xlabel('Durchschnitt')
        
        
         
         # 4. Maximale SNPs in einer Accession
         axes[1,1].barh(stats_df['effect'], stats_df['max'], color='yellow')
-        axes[1,1].set_title('Maximum SNPs in One Accession')
+        axes[1,1].set_title('Maximum SNPs in einer Accession')
         axes[1,1].set_xlabel('Maximum')
         axes[1,1].set_xscale('log')
         
@@ -981,7 +818,7 @@ class SNPAnalysisPipeline:
             ax.invert_yaxis()
             ax.tick_params(axis='y', labelsize=8)
         
-        plt.suptitle(f'Allele Frequency Summary - {self.dataset_name}', fontsize=16)
+        plt.suptitle(f'Allelfrequenz-Zusammenfassung - {self.dataset_name}', fontsize=16)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         
         # Speichern
@@ -1087,10 +924,10 @@ class SNPAnalysisPipeline:
             if plot:
                 fig_matrix = plt.figure(figsize=(14, 12))
                 plt.imshow(matrix, cmap="viridis")
-                plt.colorbar(label="Frequency")
+                plt.colorbar(label="Häufigkeit")
                 plt.xticks(range(len(matrix.columns)), matrix.columns, rotation=45, ha='right')
                 plt.yticks(range(len(matrix.index)), matrix.index)
-                plt.title(f"Amino Acid Substitutions ({iso}) - {self.dataset_name}")
+                plt.title(f"Aminosäure-Substitutionen ({iso}) - {self.dataset_name}")
                 plt.xlabel("Alt AA")
                 plt.ylabel("Ref AA")
                 plt.tight_layout()
@@ -1124,9 +961,9 @@ class SNPAnalysisPipeline:
                     top_counts["count"],
                     color="steelblue"
                 )
-                plt.xlabel("Frequency")
+                plt.xlabel("Häufigkeit")
                 plt.ylabel("Substitution")
-                plt.title(f"Top {top_n} Amino Acid Substitutions ({iso}) - {self.dataset_name}")
+                plt.title(f"Top {top_n} Aminosäure-Substitutionen ({iso}) - {self.dataset_name}")
                 plt.gca().invert_yaxis()
                 plt.tight_layout()
 
@@ -1175,11 +1012,6 @@ class SNPAnalysisPipeline:
         self.count_accessions_per_isoform()
         self.count_genes_per_isoform()
         
-        # 3.1. Histogramm eindeutiger Gene pro Isoform
-        with open(self.report_file, "a") as f:
-            f.write("Erstelle Histogramm eindeutiger Gene pro Isoform...\n")
-        self.plot_unique_genes_per_isoform_histogram()
-        
         # 4. Isoform-spezifische Analysen
         with open(self.report_file, "a") as f:
             f.write("Erstelle Isoform-subsets...\n")
@@ -1206,29 +1038,14 @@ class SNPAnalysisPipeline:
             f.write("Analysiere Aminosäure-Substitutionen...\n")
         self.analyze_aa_substitutions()
         
-        # 9. Analyse ALLER Effekt-Kategorien (10 Kategorien)
-        with open(self.report_file, "a") as f:
-            f.write("Analysiere ALLE Effekt-Kategorien (10 Kategorien)...\n")
-        all_categories_results = self.analyze_all_effect_categories()
-        
-        # 9.1. Analyse von Codons mit mehreren SNPs
-        with open(self.report_file, "a") as f:
-            f.write("Analysiere Codons mit mehreren SNPs...\n")
-        multiple_snp_results = self.analyze_multiple_snps_per_codon()
-        
-        # 9.2. Analyse eindeutiger SNP-Positionen pro Gen
-        with open(self.report_file, "a") as f:
-            f.write("Analysiere eindeutige SNP-Positionen pro Gen...\n")
-        unique_positions_results = self.analyze_unique_positions_per_gene()
-        
-        # 10. SNP-Dichte-Analyse
+        # 9.  SNP-Dichte-Analyse
         with open(self.report_file, "a") as f:
             f.write("Analysiere SNP-Dichten...\n")
         snp_density_results = self.analyse_snp_densities_optimized(
             out_dir=os.path.join(self.results_dir, "snp_densities")
         )
         
-        # 11. Finale PDF erstellen
+        # 10. Finale PDF erstellen
         with open(self.report_file, "a") as f:
             f.write("Erstelle finale PDF mit allen Plots...\n")
         self.create_final_pdf()
@@ -1240,468 +1057,57 @@ class SNPAnalysisPipeline:
 
     def classify_effect(self, effect: str) -> str:
         """
-        Klassifiziert eine Mutation in GENAU EINE der 10 disjunkten Kategorien.
-        
-        Die 10 disjunkten Kategorien (in Prioritäts-Reihenfolge):
-        1. Splice-related-coding-synonymous - Splice + Synonymous
-        2. Splice-related-coding-non-synonymous - Splice + Missense/Frameshift/Stop/etc.
-        3. Splice-related-non-coding - Splice + Non-coding/Intron oder reines Splice
-        4. Missense - Missense-Varianten (ohne Splice)
-        5. Protein-changing-non-missense - Andere Protein-verändernde (Frameshift, Stop, Start, Inframe)
-        6. Synonymous - Synonyme Varianten (ohne Splice)
-        7. UTR - UTR-Varianten
-        8. Intron - Intron-Varianten (ohne Splice)
-        9. Non-coding - Non-coding-Varianten
-        10. Other - Alle anderen
-        
-        Hinweis: Jeder Effekt wird GENAU EINER Kategorie zugeordnet.
-        
-        Returns
-        -------
-        str
-            Die eindeutige Kategorie für diesen Effekt
+        Klassifiziert eine Mutation in eine Hauptkategorie:
+        - Protein-changing
+        - Synonymous
+        - Splice-related
+        - UTR
+        - Intron
+        - Non-coding
         """
         # Lowercase für Sicherheit
         e = effect.lower()
-        
-        # === PRIORITÄTS-BASIERTE KLASSIFIZIERUNG ===
-        # Die Reihenfolge ist wichtig! Spezifischere Kategorien zuerst.
-        
-        # 1. Splice-related Kategorien (höchste Priorität)
-        if "splice" in e:
-            # 1a. Splice + Synonymous
-            if "synonymous" in e or "retained" in e:
-                return "Splice-related-coding-synonymous"
-            
-            # 1b. Splice + Protein-changing (Missense, Frameshift, Stop, etc.)
-            elif any(keyword in e for keyword in [
-                "missense", "frameshift", "stop", "start", "inframe", "initiator_codon"
-            ]):
-                return "Splice-related-coding-non-synonymous"
-            
-            # 1c. Splice + Non-coding/Intron ODER reines Splice
-            else:
-                return "Splice-related-non-coding"
-        
-        # 2. UTR (höhere Priorität als Protein-changing, weil manche UTR-Varianten "start" enthalten)
-        if "utr" in e:
-            return "UTR"
-        
-        # 3. Missense (ohne Splice)
-        if "missense" in e:
-            return "Missense"
-        
-        # 4. Andere Protein-changing (ohne Splice, ohne Missense)
-        # Wichtig: "start_lost" nicht nur "start", um UTR-Varianten mit "start_codon" zu vermeiden
-        if any(keyword in e for keyword in [
-            "frameshift", "stop_gained", "stop_lost", "start_lost", "inframe", "initiator_codon"
-        ]):
-            return "Protein-changing-non-missense"
-        
-        # 5. Synonymous (ohne Splice)
+
+        # Synonymous zuerst (weil "synonymous" + "splice" auch vorkommen kann)
         if "synonymous" in e or "retained" in e:
             return "Synonymous"
-        
-        # 6. Intron (ohne Splice)
+
+        # Splice-related
+        if "splice" in e:
+            return "Splice-related"
+
+        # Protein-changing
+        if any(keyword in e for keyword in [
+            "missense", "frameshift", "stop", "start", "inframe", "initiator_codon"
+        ]):
+            return "Protein-changing"
+
+        # UTR
+        if "utr" in e:
+            return "UTR"
+
+        # Intron (nur wenn wirklich reines intron oder Kombination ohne splice)
         if "intron" in e:
             return "Intron"
-        
-        # 7. Non-coding
+
+        # Non-coding
         if "non_coding" in e:
             return "Non-coding"
-        
-        # 8. Fallback
+
+        # Fallback
         return "Other"
-
-    def analyze_all_effect_categories(self):
-        """
-        Analysiert die Verteilung aller 10 disjunkten Effekt-Kategorien.
-        
-        Jeder SNP wird genau EINER Kategorie zugeordnet.
-        
-        Erstellt:
-        - CSV mit Anzahl SNPs pro Kategorie
-        - Barplot der Kategorie-Verteilung
-        - Heatmap: Kategorien vs Isoformen
-        - Detaillierte Statistiken im Report
-        """
-        with open(self.report_file, "a") as f:
-            f.write("\n" + "=" * 60 + "\n")
-            f.write("Analyse ALLER Effekt-Kategorien (10 Kategorien)\n")
-            f.write("=" * 60 + "\n\n")
-        
-        # Alle Kategorien für jeden SNP extrahieren
-        all_category_counts = Counter()
-        category_per_isoform = {}
-        
-        # Isoformen extrahieren
-        isoform_numbers = {int(t.split('.')[-1]) for t in self.df['transcript_id'] if '.' in t}
-        isoforms = [f".{iso}" for iso in sorted(isoform_numbers)]
-        isoforms.append("all")
-        
-        for isoform in isoforms:
-            if isoform == "all":
-                df_iso = self.df.copy()
-            else:
-                df_iso = self.df[self.df['transcript_id'].str.endswith(isoform)].copy()
-            
-            if df_iso.empty:
-                continue
-            
-            # Für jedes SNP die EINE Kategorie zählen (disjunkt)
-            isoform_category_counts = Counter()
-            for idx, row in df_iso.iterrows():
-                category = self.classify_effect(row['eff'])
-                isoform_category_counts[category] += 1
-                if isoform == "all":
-                    all_category_counts[category] += 1
-            
-            category_per_isoform[isoform] = isoform_category_counts
-        
-        # === 1. Gesamt-Statistik (alle Transkripte) ===
-        category_stats_df = pd.DataFrame([
-            {'Category': cat, 'Count': count} 
-            for cat, count in all_category_counts.most_common()
-        ])
-        
-        # CSV speichern
-        csv_file = os.path.join(self.csv_dir, "all_categories_distribution.csv")
-        category_stats_df.to_csv(csv_file, index=False)
-        
-        # Report schreiben
-        with open(self.report_file, "a") as f:
-            f.write("Gesamt-Verteilung aller Kategorien:\n")
-            f.write(category_stats_df.to_string(index=False))
-            f.write(f"\n\nGespeichert in: {csv_file}\n\n")
-        
-        # === 2. Barplot der Kategorie-Verteilung ===
-        fig_bar = plt.figure(figsize=(14, 8))
-        plt.barh(category_stats_df['Category'], category_stats_df['Count'], color='steelblue')
-        plt.xlabel('Number of SNPs')
-        plt.ylabel('Category')
-        plt.title(f'Distribution of All 10 Effect Categories - {self.dataset_name}')
-        plt.xscale('log')
-        plt.gca().invert_yaxis()
-        plt.tight_layout()
-        
-        # PNG speichern
-        bar_plot_path = os.path.join(self.plots_dir, "all_categories_barplot.png")
-        plt.savefig(bar_plot_path, dpi=300, bbox_inches='tight')
-        self.add_plot_to_pdf(fig_bar)
-        plt.close()
-        
-        # === 3. Heatmap: Kategorien vs Isoformen ===
-        # DataFrame für Heatmap erstellen
-        heatmap_data = []
-        for isoform, counts in category_per_isoform.items():
-            row = {'isoform': isoform}
-            for category in all_category_counts.keys():
-                row[category] = counts.get(category, 0)
-            heatmap_data.append(row)
-        
-        heatmap_df = pd.DataFrame(heatmap_data)
-        heatmap_df = heatmap_df.set_index('isoform')
-        
-        # CSV speichern
-        heatmap_csv = os.path.join(self.csv_dir, "categories_per_isoform_matrix.csv")
-        heatmap_df.to_csv(heatmap_csv)
-        
-        # Heatmap erstellen
-        fig_heatmap, ax = plt.subplots(figsize=(16, 10))
-        
-        # Log-Transformation für bessere Visualisierung
-        heatmap_log = np.log(heatmap_df + 1)  # +1 um log(0) zu vermeiden
-        
-        sns.heatmap(heatmap_log, 
-                   annot=True, 
-                   fmt='.1f',
-                   cmap='YlOrRd', 
-                   ax=ax,
-                   cbar_kws={'label': 'log(SNP count + 1)'})
-        
-        ax.set_title(f'All Categories vs Isoforms - {self.dataset_name}', fontsize=14, fontweight='bold')
-        ax.set_xlabel('Effect Categories', fontsize=12)
-        ax.set_ylabel('Isoforms', fontsize=12)
-        
-        # X-Achse Labels rotieren
-        plt.xticks(rotation=45, ha='right', fontsize=9)
-        plt.yticks(rotation=0, fontsize=10)
-        
-        plt.tight_layout()
-        
-        # PNG speichern
-        heatmap_path = os.path.join(self.plots_dir, "all_categories_heatmap.png")
-        plt.savefig(heatmap_path, dpi=300, bbox_inches='tight')
-        self.add_plot_to_pdf(fig_heatmap)
-        plt.close()
-        
-        # === 4. Zusammenfassung ===
-        with open(self.report_file, "a") as f:
-            f.write(f"\nPlots gespeichert:\n")
-            f.write(f"  - {bar_plot_path}\n")
-            f.write(f"  - {heatmap_path}\n")
-            f.write(f"  - {heatmap_csv}\n\n")
-        
-        return {
-            'category_stats': category_stats_df,
-            'category_per_isoform': heatmap_df,
-            'all_category_counts': all_category_counts
-        }
-
-    def analyze_multiple_snps_per_codon(self):
-        """
-        Analysiert Codons mit mehreren SNPs und deren Effekt-Kombinationen.
-        
-        Berechnet:
-        - Anzahl Codons mit >1 SNP
-        - Effekt-Kombinationen in diesen Codons
-        - Häufigkeitsverteilung der Kombinationen
-        """
-        # print("Analysiere Codons mit mehreren SNPs...")
-
-        
-        # Codon-Position berechnen (cds_pos % 3)
-        self.df['codon_position'] = self.df['cds_pos'] % 3
-        self.df['codon_start'] = self.df['cds_pos'] - self.df['codon_position']
-        
-        # SNPs nach Codon gruppieren (pro Transkript!)
-        codon_groups = self.df.groupby(['transcript_id', 'codon_start'])
-        
-        # Codons mit mehreren SNPs identifizieren
-        multiple_snp_codons = codon_groups.filter(lambda x: len(x) > 1)
-        
-        if len(multiple_snp_codons) == 0:
-            # print("Keine Codons mit mehreren SNPs gefunden.")
-            return None
-        
-        # Anzahl Codons mit mehreren SNPs
-        num_codons_with_multiple_snps = len(codon_groups.filter(lambda x: len(x) > 1).groupby(['transcript_id', 'codon_start']))
-        
-        # Effekt-Kombinationen analysieren
-        effect_combinations = {}
-        
-        for (transcript_id, codon_start), group in codon_groups:
-            if len(group) > 1:
-                # Eindeutige Positionen im Codon (verschiedene Accessions können gleiche Position haben)
-                unique_positions = group['cds_pos'].nunique()
-                
-                # Filter: Nur nicht-kodierende Regionen ausschließen (cds_pos < 0)
-                if codon_start < 0:
-                    continue  # Überspringen von UTR/nicht-kodierenden Regionen
-                
-                # Warnung bei zu vielen eindeutigen Positionen (sollte max 3 sein)
-                if unique_positions > 3:
-                    # print(f"WARNUNG: Codon {transcript_id}:{codon_start} hat {unique_positions} eindeutige Positionen (mehr als 3!)")
-                    pass
-                
-                # Effekte sammeln - gruppiert nach eindeutiger Position
-                # Für jede Position: nimm den häufigsten Effekt
-                position_effects = []
-                for pos in sorted(group['cds_pos'].unique()):
-                    pos_group = group[group['cds_pos'] == pos]
-                    # Häufigster Effekt an dieser Position
-                    most_common_effect = pos_group['eff'].apply(self.classify_effect).mode()[0] if len(pos_group) > 0 else None
-                    if most_common_effect:
-                        position_effects.append(most_common_effect)
-                
-                position_effects.sort()  # Sortieren für konsistente Darstellung
-                
-                # Kombination als String erstellen
-                combination = " + ".join(position_effects)
-                
-                if combination in effect_combinations:
-                    effect_combinations[combination] += 1
-                else:
-                    effect_combinations[combination] = 1
-        
-        # DataFrame für Plot erstellen
-        combination_df = pd.DataFrame(list(effect_combinations.items()), 
-                                    columns=['Effect_Combination', 'Count'])
-        combination_df = combination_df.sort_values('Count', ascending=False)
-        
-        # Nur die Top-10 häufigsten Kombinationen für den Plot
-        top_combinations = combination_df.head(10)
-        
-        # Plot erstellen mit angepasster Größe
-        plt.figure(figsize=(14, 6))
-        sns.barplot(data=top_combinations, x='Effect_Combination', y='Count')
-        plt.title(f'Top-10 Effect Combinations in Codons with Multiple SNPs - {self.dataset_name}')
-        plt.xticks(rotation=45, ha='right')
-        plt.ylabel('Number of Codons')
-        
-        # Werte über den Balken hinzufügen
-        for i, (idx, row) in enumerate(top_combinations.iterrows()):
-            value = row['Count']
-            plt.text(i, value + max(top_combinations['Count']) * 0.01, str(value), 
-                    ha='center', va='bottom', fontweight='bold')
-        
-        plt.tight_layout()
-        
-        # PNG speichern
-        plot_path = os.path.join(self.plots_dir, "multiple_snps_per_codon.png")
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        
-        # Zur PDF hinzufügen
-        self.add_plot_to_pdf(plt.gcf())
-        plt.close()
-        
-        # Report schreiben
-        report_path = os.path.join(self.reports_dir, "multiple_snps_per_codon_report.txt")
-        with open(report_path, 'w', encoding='utf-8') as f:
-            f.write(f"ANALYSE VON CODONS MIT MEHREREN SNPS - {self.dataset_name}\n")
-            f.write("=" * 80 + "\n\n")
-            
-            # Übersicht
-            f.write("ÜBERSICHT:\n")
-            f.write("-" * 40 + "\n")
-            f.write(f"Anzahl Codons mit mehreren SNPs: {num_codons_with_multiple_snps:,}\n")
-            f.write(f"Gesamt Codons im Datensatz:     {len(codon_groups):,}\n")
-            f.write(f"Anteil (in Prozent):            {num_codons_with_multiple_snps/len(codon_groups)*100:.2f}%\n")
-            f.write(f"Anzahl verschiedener Kombinationen: {len(effect_combinations)}\n")
-            f.write(f"\nHINWEIS: Gruppierung erfolgt pro Transkript (nicht pro Gen)\n")
-            f.write(f"         Ein Codon hat 3 Positionen, aber verschiedene Accessions können\n")
-            f.write(f"         unterschiedliche SNPs an denselben Positionen haben.\n")
-            f.write(f"         Analyse zählt eindeutige Kombinationen von SNP-Positionen.\n")
-            f.write(f"         UTR/nicht-kodierende Regionen (cds_pos < 0) werden ausgeschlossen.\n\n")
-            
-            # Sortierte Liste der Kombinationen
-            f.write("EFFEKT-KOMBINATIONEN (sortiert nach Häufigkeit):\n")
-            f.write("-" * 60 + "\n")
-            f.write(f"{'Rang':<4} {'Anzahl':<8} {'Effekt-Kombination':<50}\n")
-            f.write("-" * 60 + "\n")
-            
-            # Kombinationen nach Häufigkeit sortieren
-            sorted_combinations = sorted(effect_combinations.items(), key=lambda x: x[1], reverse=True)
-            
-            for rank, (combination, count) in enumerate(sorted_combinations, 1):
-                f.write(f"{rank:<4} {count:<8,} {combination:<50}\n")
-            
-            f.write("-" * 60 + "\n")
-            f.write(f"{'GESAMT:':<12} {sum(effect_combinations.values()):<8,} {'Codons mit mehreren SNPs':<50}\n\n")
-            
-            # Top-10 für bessere Übersicht
-            f.write("TOP-10 HÄUFIGSTE KOMBINATIONEN:\n")
-            f.write("-" * 50 + "\n")
-            for rank, (combination, count) in enumerate(sorted_combinations[:10], 1):
-                percentage = (count / sum(effect_combinations.values())) * 100
-                f.write(f"{rank:2d}. {combination:<40} {count:>6,} ({percentage:5.1f}%)\n")
-            
-            f.write(f"\nHINWEIS: Plot zeigt die Top-10 häufigsten Kombinationen\n")
-            f.write(f"ANALYSE ERSTELLT: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-        
-        # print(f"Analyse der Codons mit mehreren SNPs abgeschlossen.")
-        # print(f"Gefunden: {num_codons_with_multiple_snps:,} Codons mit mehreren SNPs")
-        # print(f"Plot gespeichert: {plot_path}")
-        # print(f"Report gespeichert: {report_path}")
-        
-        return {
-            'num_codons_with_multiple_snps': num_codons_with_multiple_snps,
-            'effect_combinations': effect_combinations,
-            'total_codons': len(codon_groups)
-        }
-
-    def analyze_unique_positions_per_gene(self):
-        """
-        Analysiert die Anzahl verschiedener SNP-Positionen pro Gen.
-        """
-        # print("Analysiere eindeutige SNP-Positionen pro Gen...")
-        
-        # Eindeutige Positionen pro Gen zählen
-        unique_positions_per_gene = self.df.groupby('gene_id')['cds_pos'].nunique().reset_index()
-        unique_positions_per_gene.columns = ['gene_id', 'unique_positions']
-        
-        # Sortieren nach Anzahl Positionen
-        unique_positions_per_gene = unique_positions_per_gene.sort_values('unique_positions', ascending=False)
-        
-        # CSV speichern
-        csv_file = os.path.join(self.csv_dir, "unique_positions_per_gene.csv")
-        unique_positions_per_gene.to_csv(csv_file, index=False)
-        
-        # Statistiken
-        with open(self.report_file, "a") as f:
-            f.write(f"\n" + "=" * 60 + "\n")
-            f.write("ANALYSE EINDEUTIGER SNP-POSITIONEN PRO GEN\n")
-            f.write("=" * 60 + "\n\n")
-            
-            f.write(f"Gesamtzahl Gene: {len(unique_positions_per_gene)}\n")
-            f.write(f"Durchschnitt Positionen pro Gen: {unique_positions_per_gene['unique_positions'].mean():.2f}\n")
-            f.write(f"Median Positionen pro Gen: {unique_positions_per_gene['unique_positions'].median()}\n")
-            f.write(f"Min Positionen pro Gen: {unique_positions_per_gene['unique_positions'].min()}\n")
-            f.write(f"Max Positionen pro Gen: {unique_positions_per_gene['unique_positions'].max()}\n\n")
-        
-        # Top-10 Gene Plot
-        top_10_genes = unique_positions_per_gene.head(10)
-        
-        plt.figure(figsize=(12, 8))
-        bars = plt.barh(top_10_genes['gene_id'], top_10_genes['unique_positions'], color='lightcoral')
-        plt.xlabel("Number of Unique SNP Positions")
-        plt.ylabel("Gene")
-        plt.title(f'Top-10 Genes with Most Unique SNP Positions - {self.dataset_name}')
-        
-        # Werte über den Balken hinzufügen
-        for i, (idx, row) in enumerate(top_10_genes.iterrows()):
-            value = row['unique_positions']
-            plt.text(value + max(top_10_genes['unique_positions']) * 0.01, i, str(value), 
-                    va='center', fontweight='bold')
-        
-        plt.tight_layout()
-        
-        # PNG speichern
-        plot_path = os.path.join(self.plots_dir, "top10_genes_unique_positions.png")
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        
-        # Zur PDF hinzufügen
-        self.add_plot_to_pdf(plt.gcf())
-        plt.close()
-        
-        # Histogramm der Verteilung
-        plt.figure(figsize=(12, 8))
-        plt.hist(unique_positions_per_gene['unique_positions'], bins=20, color='lightblue', edgecolor='black')
-        plt.xlabel("Number of Unique SNP Positions per Gene")
-        plt.ylabel("Number of Genes")
-        plt.title(f'Distribution of Unique SNP Positions per Gene - {self.dataset_name}')
-        plt.grid(axis='y', linestyle='--', alpha=0.7)
-        plt.tight_layout()
-        
-        # PNG speichern
-        hist_path = os.path.join(self.plots_dir, "unique_positions_histogram.png")
-        plt.savefig(hist_path, dpi=300, bbox_inches='tight')
-        
-        # Zur PDF hinzufügen
-        self.add_plot_to_pdf(plt.gcf())
-        plt.close()
-        
-        # print(f"Analyse der eindeutigen SNP-Positionen pro Gen abgeschlossen.")
-        # print(f"CSV gespeichert: {csv_file}")
-        # print(f"Top-10 Plot gespeichert: {plot_path}")
-        # print(f"Histogramm gespeichert: {hist_path}")
-        
-        return {
-            'unique_positions_per_gene': unique_positions_per_gene,
-            'stats': {
-                'mean': unique_positions_per_gene['unique_positions'].mean(),
-                'median': unique_positions_per_gene['unique_positions'].median(),
-                'min': unique_positions_per_gene['unique_positions'].min(),
-                'max': unique_positions_per_gene['unique_positions'].max()
-            }
-        }
 
     def get_normalization_lengths_dict(self) -> dict:
         """
-        Erstellt ein Dictionary mit Normalisierungslängen für alle 10 disjunkten Kategorien.
+        Erstellt ein Dictionary mit Normalisierungslängen für jede Effekt-Kategorie.
         """
         normalization_lengths = {
-            # Alle 10 disjunkten Kategorien
-            "Splice-related-coding-synonymous": "cds_len",   # CDS-Länge
-            "Splice-related-coding-non-synonymous": "cds_len", # CDS-Länge
-            "Splice-related-non-coding": "cdna_len",         # cDNA-Länge
-            "Missense": "cds_len",                           # CDS-Länge
-            "Protein-changing-non-missense": "cds_len",      # CDS-Länge
-            "Synonymous": "cds_len",                         # CDS-Länge
-            "UTR": "cdna_len - cds_len",                     # UTR-Länge
-            "Intron": "cdna_len",                            # cDNA-Länge
-            "Non-coding": "cdna_len",                        # cDNA-Länge
-            "Other": "cds_len"                               # Fallback: CDS-Länge
+            "Protein-changing": "cds_len",                   # CDS-Länge für Protein-Effekte
+            "Synonymous": "cds_len",                         # CDS-Länge für synonyme Mutationen
+            "Splice-related": "cdna_len",                    # cDNA-Länge für Splice-Effekte
+            "UTR": "cdna_len - cds_len",                     # UTR-Länge (gesamte cDNA minus CDS)
+            "Intron": "cdna_len",                            # cDNA-Länge für Intron-Effekte
+            "Non-coding": "cdna_len"                         # cDNA-Länge für Non-coding Effekte
         }
         
         return normalization_lengths
@@ -1721,7 +1127,7 @@ class SNPAnalysisPipeline:
         
         os.makedirs(out_dir, exist_ok=True)
         
-        # Effekt-Kategorien für alle SNPs zuweisen (disjunkt - jeder SNP hat genau EINE Kategorie)
+        # Effekt-Kategorien für alle SNPs zuweisen
         self.df['effect_category'] = self.df['eff'].apply(self.classify_effect)
         
         # Normalisierungslängen-Dictionary erhalten
@@ -1741,8 +1147,10 @@ class SNPAnalysisPipeline:
         )
         self.df.loc[self.df['noncoding_len'] <= 0, 'noncoding_len'] = np.nan
         
-        # Isoformen extrahieren
-        isoforms = sorted(set(self.df['transcript_id'].str.extract(r'(\.\d+)$')[0].dropna()))
+        # Isoformen extrahieren - numerisch sortieren
+        isoform_strings = set(self.df['transcript_id'].str.extract(r'(\.\d+)$')[0].dropna())
+        isoform_numbers = [int(iso.replace('.', '')) for iso in isoform_strings]
+        isoforms = [f".{num}" for num in sorted(isoform_numbers)]
         isoforms.append("all")
         
         results = {}
@@ -1925,31 +1333,9 @@ class SNPAnalysisPipeline:
             
             plt.figure(figsize=(10, 6))
             sns.barplot(data=all_summaries_clean, x='isoform', y='avg_density')
-            plt.ylabel('Average SNP Density')
-            plt.title('Comparison of SNP Densities per Isoform')
+            plt.ylabel('Durchschnittliche SNP-Dichte')
+            plt.title('Vergleich der SNP-Dichten pro Isoform')
             plt.xticks(rotation=45)
-            
-            # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-            ax = plt.gca()
-            # Maximalhöhe für Threshold-Berechnung
-            max_height = max([bar.get_height() for container in ax.containers for bar in container if not np.isnan(bar.get_height())])
-            threshold = max_height * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-            
-            for container in ax.containers:
-                for i, bar in enumerate(container):
-                    height = bar.get_height()
-                    if not np.isnan(height) and height > 0:
-                        if height < threshold:
-                            # Kurze Balken: Werte oberhalb
-                            ax.text(bar.get_x() + bar.get_width()/2, height * 1.1, 
-                                   f'{height:.2e}', ha='center', va='bottom', 
-                                   rotation=90, fontsize=8, color='black')
-                        else:
-                            # Lange Balken: Werte auf dem Balken
-                            ax.text(bar.get_x() + bar.get_width()/2, height * 0.5, 
-                                   f'{height:.2e}', ha='center', va='center', 
-                                   rotation=90, fontsize=8, color='white')
-            
             plt.tight_layout()
             
             plot_path = os.path.join(out_dir, 'optimized_snp_density_comparison.png')
@@ -1970,31 +1356,9 @@ class SNPAnalysisPipeline:
             plt.figure(figsize=(12, 6))
             sns.barplot(data=all_effects_clean[all_effects_clean['effect'].isin(top_eff)], 
                        x='effect', y='density', hue='isoform')
-            plt.ylabel('SNP Density')
-            plt.title('Top-5 Effects by Density')
+            plt.ylabel('SNP-Dichte')
+            plt.title('Top-5 Effekte nach Dichte')
             plt.xticks(rotation=45, ha='right')
-            
-            # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-            ax = plt.gca()
-            # Maximalhöhe für Threshold-Berechnung
-            max_height = max([bar.get_height() for container in ax.containers for bar in container if not np.isnan(bar.get_height())])
-            threshold = max_height * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-            
-            for container in ax.containers:
-                for i, bar in enumerate(container):
-                    height = bar.get_height()
-                    if not np.isnan(height) and height > 0:
-                        if height < threshold:
-                            # Kurze Balken: Werte oberhalb
-                            ax.text(bar.get_x() + bar.get_width()/2, height * 1.1, 
-                                   f'{height:.2e}', ha='center', va='bottom', 
-                                   rotation=90, fontsize=8, color='black')
-                        else:
-                            # Lange Balken: Werte auf dem Balken
-                            ax.text(bar.get_x() + bar.get_width()/2, height * 0.5, 
-                                   f'{height:.2e}', ha='center', va='center', 
-                                   rotation=90, fontsize=8, color='white')
-            
             plt.tight_layout()
             
             plot_path = os.path.join(out_dir, 'top5_effects_optimized.png')
@@ -2004,26 +1368,13 @@ class SNPAnalysisPipeline:
             self.add_plot_to_pdf(plt.gcf())
             plt.close()
             
-            # Plot 2: Alle 10 disjunkten Effekt-Kategorien
+            # Plot 2: Alle 6 Effekt-Kategorien (nach Gruppierung)
             category_densities = []
-            all_categories = [
-                'Splice-related-coding-synonymous',
-                'Splice-related-coding-non-synonymous',
-                'Splice-related-non-coding',
-                'Missense',
-                'Protein-changing-non-missense',
-                'Synonymous',
-                'UTR',
-                'Intron',
-                'Non-coding',
-                'Other'
-            ]
-            
             for isoform in all_effects_clean['isoform'].unique():
                 isoform_data = all_effects_clean[all_effects_clean['isoform'] == isoform]
                 
                 # Effekte nach Kategorien gruppieren
-                for category in all_categories:
+                for category in ['Protein-changing', 'Synonymous', 'Splice-related', 'UTR', 'Intron', 'Non-coding']:
                     category_effects = isoform_data[isoform_data['effect_category'] == category]
                     if not category_effects.empty:
                         avg_density = category_effects['density'].mean()
@@ -2036,33 +1387,11 @@ class SNPAnalysisPipeline:
             if category_densities:
                 category_df = pd.DataFrame(category_densities)
                 
-                plt.figure(figsize=(16, 8))
+                plt.figure(figsize=(12, 6))
                 sns.barplot(data=category_df, x='effect_category', y='avg_density', hue='isoform')
-                plt.ylabel('Average SNP Density')
-                plt.title('SNP Density by All 10 Disjoint Categories')
+                plt.ylabel('Durchschnittliche SNP-Dichte')
+                plt.title('SNP-Dichte nach Effekt-Kategorien (alle 6 Kategorien)')
                 plt.xticks(rotation=45, ha='right')
-                
-                # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-                ax = plt.gca()
-                # Maximalhöhe für Threshold-Berechnung
-                max_height = max([bar.get_height() for container in ax.containers for bar in container if not np.isnan(bar.get_height())])
-                threshold = max_height * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-                
-                for container in ax.containers:
-                    for i, bar in enumerate(container):
-                        height = bar.get_height()
-                        if not np.isnan(height) and height > 0:
-                            if height < threshold:
-                                # Kurze Balken: Werte oberhalb
-                                ax.text(bar.get_x() + bar.get_width()/2, height * 1.1, 
-                                       f'{height:.2e}', ha='center', va='bottom', 
-                                       rotation=90, fontsize=8, color='black')
-                            else:
-                                # Lange Balken: Werte auf dem Balken
-                                ax.text(bar.get_x() + bar.get_width()/2, height * 0.5, 
-                                       f'{height:.2e}', ha='center', va='center', 
-                                       rotation=90, fontsize=8, color='white')
-                
                 plt.tight_layout()
                 
                 plot_path = os.path.join(out_dir, 'effect_categories_density.png')
@@ -2080,7 +1409,7 @@ class SNPAnalysisPipeline:
 
     def _create_detailed_category_plots(self, category_df, all_effects_df, out_dir):
         """
-        Erstellt detaillierte Visualisierungen für die 10 disjunkten Effekt-Kategorien.
+        Erstellt detaillierte Visualisierungen für die 6 Effekt-Kategorien.
         """
         # 1. Heatmap: Kategorien vs Isoformen
         self._plot_category_isoform_heatmap(category_df, out_dir)
@@ -2088,11 +1417,8 @@ class SNPAnalysisPipeline:
         # 2. Einzelne Plots für jede Kategorie
         self._plot_individual_categories(category_df, out_dir)
         
-        # 3. Verteilungsanalyse für alle 10 Kategorien
+        # 3. Verteilungsanalyse pro Kategorie
         self._plot_category_distributions(all_effects_df, out_dir)
-        
-        # 4. Spezielle Verteilungsanalyse für 4 Kategorien (3 Splice + Protein-changing-non-missense)
-        self._plot_special_4_categories_distributions(all_effects_df, out_dir)
 
     def _plot_category_isoform_heatmap(self, category_df, out_dir):
         """
@@ -2108,15 +1434,14 @@ class SNPAnalysisPipeline:
         
         # Direkte Darstellung ohne Log-Transformation
         sns.heatmap(heatmap_data_clean, 
-                   annot=True, 
-                   fmt='.4f',
+                   annot=False, 
                    cmap='viridis', 
                    ax=ax,
-                   cbar_kws={'label': 'SNP Density'})
+                   cbar_kws={'label': 'SNP-Dichte'})
         
-        ax.set_title(f'SNP Density Heatmap: 10 Disjoint Categories × Isoforms - {self.dataset_name}')
-        ax.set_xlabel('Isoforms')
-        ax.set_ylabel('Effect Categories')
+        ax.set_title(f'SNP-Dichte Heatmap: 6 Kategorien × Isoformen - {self.dataset_name}')
+        ax.set_xlabel('Isoformen')
+        ax.set_ylabel('Effekt-Kategorien')
         
         plt.tight_layout()
         plot_path = os.path.join(out_dir, 'category_isoform_heatmap.png')
@@ -2128,22 +1453,11 @@ class SNPAnalysisPipeline:
 
     def _plot_individual_categories(self, category_df, out_dir):
         """
-        Erstellt individuelle Barplots für alle 10 disjunkten Kategorien.
+        Erstellt individuelle Barplots für jede der 6 Kategorien.
         """
-        categories = [
-            'Splice-related-coding-synonymous',
-            'Splice-related-coding-non-synonymous',
-            'Splice-related-non-coding',
-            'Missense',
-            'Protein-changing-non-missense',
-            'Synonymous',
-            'UTR',
-            'Intron',
-            'Non-coding',
-            'Other'
-        ]
+        categories = ['Protein-changing', 'Synonymous', 'Splice-related', 'UTR', 'Intron', 'Non-coding']
         
-        fig, axes = plt.subplots(2, 5, figsize=(30, 12))
+        fig, axes = plt.subplots(2, 3, figsize=(18, 12))
         axes = axes.flatten()
         
         for i, category in enumerate(categories):
@@ -2151,29 +1465,16 @@ class SNPAnalysisPipeline:
             cat_data = category_df[category_df['effect_category'] == category]
             
             if not cat_data.empty:
-                # Sortiere Isoformen für konsistente Darstellung
-                cat_data_sorted = cat_data.sort_values('isoform')
+                # Sortiere Isoformen numerisch für konsistente Darstellung
+                cat_data['isoform_num'] = cat_data['isoform'].str.replace('.', '').str.replace('all', '999').astype(int)
+                cat_data_sorted = cat_data.sort_values('isoform_num')
                 
                 bars = ax.bar(cat_data_sorted['isoform'], cat_data_sorted['avg_density'], 
                              color=plt.cm.Set3(i), alpha=0.8)
                 
-                # Werte intelligent positionieren (auf oder über Balken je nach Höhe)
-                max_height = cat_data_sorted['avg_density'].max()
-                threshold = max_height * 0.1  # Balken unter 10% der max Höhe sind "kurz"
-                
-                for bar, value in zip(bars, cat_data_sorted['avg_density']):
-                    height = bar.get_height()
-                    if value < threshold:
-                        # Kurze Balken: Werte oberhalb
-                        ax.text(bar.get_x() + bar.get_width()/2., height * 1.1,
-                               f'{value:.2e}', ha='center', va='bottom', fontsize=10, rotation=90, color='black')
-                    else:
-                        # Lange Balken: Werte auf dem Balken
-                        ax.text(bar.get_x() + bar.get_width()/2., height * 0.5,
-                               f'{value:.2e}', ha='center', va='center', fontsize=10, rotation=90, color='white')
                 
                 ax.set_title(f'{category}', fontweight='bold')
-                ax.set_ylabel('SNP Density')
+                ax.set_ylabel('SNP-Dichte')
                 ax.set_xlabel('Isoform')
                 ax.tick_params(axis='x', rotation=45)
                 
@@ -2184,7 +1485,7 @@ class SNPAnalysisPipeline:
                        ha='center', va='center', transform=ax.transAxes, fontsize=12)
                 ax.set_title(f'{category}', fontweight='bold')
         
-        plt.suptitle(f'SNP Densities per Category and Isoform - {self.dataset_name}', 
+        plt.suptitle(f'SNP-Dichten pro Kategorie und Isoform - {self.dataset_name}', 
                      fontsize=16, y=0.98)
         plt.tight_layout(rect=[0, 0.03, 1, 0.95])
         
@@ -2197,23 +1498,12 @@ class SNPAnalysisPipeline:
 
     def _plot_category_distributions(self, all_effects_df, out_dir):
         """
-        Erstellt Verteilungsanalyse für alle 10 disjunkten Kategorien (Box-Plots).
+        Erstellt Verteilungsanalyse für jede Kategorie (Box-Plots).
         """
-        fig, (ax, ax_stats) = plt.subplots(1, 2, figsize=(22, 10), gridspec_kw={'width_ratios': [3, 1]})
+        fig, (ax, ax_stats) = plt.subplots(1, 2, figsize=(18, 8), gridspec_kw={'width_ratios': [3, 1]})
         
         # Daten für Box-Plot vorbereiten
-        categories = [
-            'Splice-related-coding-synonymous',
-            'Splice-related-coding-non-synonymous',
-            'Splice-related-non-coding',
-            'Missense',
-            'Protein-changing-non-missense',
-            'Synonymous',
-            'UTR',
-            'Intron',
-            'Non-coding',
-            'Other'
-        ]
+        categories = ['Protein-changing', 'Synonymous', 'Splice-related', 'UTR', 'Intron', 'Non-coding']
         
         # Nur Kategorien mit Daten verwenden
         available_categories = [cat for cat in categories if cat in all_effects_df['effect_category'].values]
@@ -2224,12 +1514,12 @@ class SNPAnalysisPipeline:
             
             # Log-Skala für Y-Achse
             #ax.set_yscale('log')
-            ax.set_title(f'Distribution of SNP Densities for All 10 Disjoint Categories - {self.dataset_name}')
-            ax.set_xlabel('Effect Categories')
-            ax.set_ylabel('SNP Density')
+            ax.set_title(f'Verteilung der SNP-Dichten pro Kategorie - {self.dataset_name}')
+            ax.set_xlabel('Effekt-Kategorien')
+            ax.set_ylabel('SNP-Dichte (log-Skala)')
             
             # X-Achse Labels rotieren
-            ax.tick_params(axis='x', rotation=45, labelsize=8)
+            ax.tick_params(axis='x', rotation=45, labelsize=10)
             
             # Statistiken im rechten Panel als Tabelle
             stats_data = []
@@ -2242,7 +1532,7 @@ class SNPAnalysisPipeline:
             
             # Statistiken-Tabelle erstellen
             ax_stats.axis('off')
-            ax_stats.set_title('Statistics', fontweight='bold', pad=20)
+            ax_stats.set_title('Statistiken', fontweight='bold', pad=20)
             
             if stats_data:
                 table = ax_stats.table(cellText=stats_data,
@@ -2271,158 +1561,6 @@ class SNPAnalysisPipeline:
         # Zur PDF hinzufügen
         self.add_plot_to_pdf(fig)
         plt.close()
-
-    def _plot_special_4_categories_distributions(self, all_effects_df, out_dir):
-        """
-        Erstellt Verteilungsanalyse für die 4 speziellen Kategorien (Box-Plots):
-        - 3 Splice-Kategorien
-        - Protein-changing-non-missense
-        """
-        fig, (ax, ax_stats) = plt.subplots(1, 2, figsize=(16, 8), gridspec_kw={'width_ratios': [3, 1]})
-        
-        # Die 4 speziellen Kategorien
-        special_categories = [
-            'Splice-related-coding-synonymous',
-            'Splice-related-coding-non-synonymous',
-            'Splice-related-non-coding',
-            'Protein-changing-non-missense'
-        ]
-        
-        # Nur Kategorien mit Daten verwenden
-        available_categories = [cat for cat in special_categories if cat in all_effects_df['effect_category'].values]
-        
-        if available_categories:
-            # Daten filtern
-            filtered_df = all_effects_df[all_effects_df['effect_category'].isin(available_categories)]
-            
-            # Box-Plot im linken Panel
-            sns.boxplot(data=filtered_df, x='effect_category', y='density', ax=ax)
-            
-            ax.set_title(f'SNP Densities for 3 Splice Categories + Protein-changing-non-missense - {self.dataset_name}')
-            ax.set_xlabel('Effect Categories')
-            ax.set_ylabel('SNP Density')
-            
-            # X-Achse Labels rotieren
-            ax.tick_params(axis='x', rotation=45, labelsize=10)
-            
-            # Statistiken im rechten Panel als Tabelle
-            stats_data = []
-            for category in available_categories:
-                cat_data = filtered_df[filtered_df['effect_category'] == category]['density']
-                if not cat_data.empty:
-                    median_val = cat_data.median()
-                    mean_val = cat_data.mean()
-                    stats_data.append([category, f'{median_val:.2e}', f'{mean_val:.2e}'])
-            
-            # Statistiken-Tabelle erstellen
-            ax_stats.axis('off')
-            ax_stats.set_title('Statistics', fontweight='bold', pad=20)
-            
-            if stats_data:
-                table = ax_stats.table(cellText=stats_data,
-                                     colLabels=['Kategorie', 'Median', 'Mean'],
-                                     cellLoc='left',
-                                     loc='center',
-                                     colWidths=[0.5, 0.25, 0.25])
-                table.auto_set_font_size(False)
-                table.set_fontsize(9)
-                table.scale(1, 2)
-                
-                # Tabellen-Styling
-                for i in range(len(stats_data) + 1):
-                    for j in range(3):
-                        cell = table[(i, j)]
-                        if i == 0:  # Header
-                            cell.set_facecolor('#40466e')
-                            cell.set_text_props(weight='bold', color='white')
-                        else:
-                            cell.set_facecolor('#f1f1f2' if i % 2 == 0 else 'white')
-        
-        plt.tight_layout()
-        plot_path = os.path.join(out_dir, 'special_4categories_density_distributions.png')
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        
-        # Zur PDF hinzufügen
-        self.add_plot_to_pdf(fig)
-        plt.close()
-
-    def plot_unique_genes_per_isoform_histogram(self):
-        """
-        Erstellt ein Histogramm der Anzahl eindeutiger Gene pro Isoform.
-        """
-        # Isoformen identifizieren
-        isoform_numbers = {int(t.split('.')[-1]) for t in self.df['transcript_id'] if '.' in t}
-        isoforms = [f".{iso}" for iso in sorted(isoform_numbers)]
-        
-        # Anzahl eindeutiger Gene pro Isoform berechnen
-        unique_genes_per_isoform = {}
-        
-        for iso in isoforms:
-            df_iso = self.df[self.df['transcript_id'].str.endswith(iso)].copy()
-            if not df_iso.empty:
-                # Eindeutige Gene in dieser Isoform
-                unique_genes = df_iso['gene_id'].nunique()
-                unique_genes_per_isoform[iso] = unique_genes
-                
-                # In Report schreiben
-                with open(self.report_file, "a") as f:
-                    f.write(f"Anzahl eindeutiger Gene Isoform {iso}: {unique_genes}\n")
-        
-        if not unique_genes_per_isoform:
-            with open(self.report_file, "a") as f:
-                f.write("Keine Isoform-Daten für Histogramm gefunden.\n")
-            return
-        
-        # Histogramm erstellen
-        fig, ax = plt.subplots(figsize=(10, 6))
-        
-        # Daten für Plot vorbereiten
-        isoform_names = list(unique_genes_per_isoform.keys())
-        gene_counts = list(unique_genes_per_isoform.values())
-        
-        # Barplot erstellen
-        bars = ax.bar(range(len(isoform_names)), gene_counts, 
-                     color='skyblue', edgecolor='navy', alpha=0.7)
-        
-        # Achsenbeschriftungen
-        ax.set_xlabel('Isoform', fontsize=12)
-        ax.set_ylabel('Number of Unique Genes', fontsize=12)
-        ax.set_title('Number of Unique Genes per Isoform', fontsize=14, fontweight='bold')
-        
-        # X-Achse Labels
-        ax.set_xticks(range(len(isoform_names)))
-        ax.set_xticklabels(isoform_names)
-        
-        # Werte auf den Balken anzeigen (vertikal)
-        for i, (bar, count) in enumerate(zip(bars, gene_counts)):
-            ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
-                   str(count), ha='center', va='bottom', fontweight='bold', rotation=90)
-        
-        # Grid hinzufügen
-        ax.grid(axis='y', alpha=0.3)
-        
-        # Layout anpassen
-        plt.tight_layout()
-        
-        # Speichern
-        plot_path = os.path.join(self.plots_dir, "unique_genes_per_isoform_histogram.png")
-        plt.savefig(plot_path, dpi=300, bbox_inches='tight')
-        
-        # Zur PDF hinzufügen
-        self.add_plot_to_pdf(fig)
-        plt.close(fig)
-        
-        with open(self.report_file, "a") as f:
-            f.write(f"Histogramm eindeutiger Gene pro Isoform gespeichert: {plot_path}\n")
-        
-        # Zusammenfassung in Report
-        with open(self.report_file, "a") as f:
-            f.write("\n=== ZUSAMMENFASSUNG: Eindeutige Gene pro Isoform ===\n")
-            for iso, count in unique_genes_per_isoform.items():
-                f.write(f"Isoform {iso}: {count} eindeutige Gene\n")
-            f.write(f"Gesamt: {len(isoform_names)} Isoformen\n")
-            f.write(f"Durchschnitt: {np.mean(gene_counts):.1f} Gene pro Isoform\n")
-            f.write("=" * 50 + "\n\n")
 
 
 def run_dual_dataset_analysis(dataset1_config, dataset2_config, output_base_dir="results"):
@@ -2472,7 +1610,7 @@ def run_dual_dataset_analysis(dataset1_config, dataset2_config, output_base_dir=
     return pipeline1, pipeline2
 
 
-# Beispiel für die Verwendung:
+
 if __name__ == "__main__":
     # Konfiguration für zwei Datensätze
     dataset1_config = {
